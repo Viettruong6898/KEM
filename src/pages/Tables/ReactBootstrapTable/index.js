@@ -106,14 +106,14 @@ class ReactBootstrapTable extends Component {
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     dataField='country'
-                    width="70%"
+                    width="65%"
                     editable={ { type: 'textarea', validator: jobNameValidator }}
                     dataSort
                     >
                     Value
                   
                   </TableHeaderColumn>
-                  <TableHeaderColumn width="20%"></TableHeaderColumn>
+                
                   
                 </BootstrapTable>
               </div>
