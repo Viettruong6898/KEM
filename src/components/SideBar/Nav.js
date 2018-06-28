@@ -4,11 +4,52 @@ import { Collapse } from 'react-bootstrap';
 
 
 class Nav extends Component {
+  staticPages = [];
+  shippingAndHolidayPages =["shippingmaster"];
+  page = "";
 
-  state = {};
+  getDataStaticPages = async() => {
+    const api_call = await fetch("http://localhost:8080/staticpages/all");
+    const data = await api_call.json();
+    for (var item in data) {
+      if (data[item].pagename !== null && data[item].pagename !== undefined) {
+      this.staticPages.push(data[item].pagename); }
+    }
 
+    return null;
+  }
+
+  getDataShippingAndHoliday = async() => {
+    const api_call = await fetch("http://localhost:8080/shippinginfos/all");
+    const data = await api_call.json();
+    for (var item in data) {
+      if (data[item].id !== null && data[item].id !== undefined) {
+      this.shippingAndHolidayPages.push(data[item].id); }
+    }
+    return null;
+  }
+
+  state = {}; 
+
+  componentDidMount() {
+    this.getDataStaticPages()
+    }
   render() {
     let { location } = this.props;
+
+    const listOfStaticPages = this.staticPages.map((staticPage) =>
+        <li  
+            key={staticPage.toString()} className={this.isPathActive(`/staticpages/${staticPage}`) ? 'active' : null}>
+            <Link to={{pathname:`/staticpages/${staticPage}`}}> {staticPage.charAt(0).toUpperCase() + staticPage.slice(1)} </Link>
+        </li>
+        ); 
+
+    const listOfShippingAndHoliday = this.shippingAndHolidayPages.map((shippingAndHolidayPage) =>
+        <li  
+            key={shippingAndHolidayPage.toString()} className={this.isPathActive(`/shippinginfos/${shippingAndHolidayPage}`) ? 'active' : null}>
+            <Link to={{pathname:`/shippinginfos/${shippingAndHolidayPage}`}}> {shippingAndHolidayPage} </Link>
+        </li>
+        ); 
     return (
       <ul className="nav">
         <li className={location.pathname === '/' ? 'active' : null}>
@@ -17,46 +58,28 @@ class Nav extends Component {
             <p>Dashboard</p>
           </Link>
         </li>
-        <li className={this.isPathActive('/shippingandholiday') || this.state.shippingandholidayMenuOpen ? 'active' : null}>
+        <li  className={this.isPathActive('/shippinginfos') || this.state.shippingandholidayMenuOpen ? 'active' : null}>
           <a onClick={() => this.setState({ shippingandholidayMenuOpen: !this.state.shippingandholidayMenuOpen })} data-toggle="collapse">
             <i className="pe-7s-news-paper"></i>
-            <p> Shipping and Holiday <b className="caret"></b></p>
+            <p> Shipping Informations <b className="caret"></b></p>
           </a>
           <Collapse in={this.state.shippingandholidayMenuOpen}>
             <div>
               <ul className="nav">
-                <li className={this.isPathActive('/shippingandholiday/accordion') ? 'active' : null}>
-                  <Link to="/shippingandholiday/accordion">Accordion</Link>
-                </li>
-                <li className={this.isPathActive('/shippingandholiday/catalog') ? 'active' : null}>
-                  <Link to="/shippingandholiday/catalog">Catalog</Link>
-                </li>
-                <li className={this.isPathActive('/shippingandholiday/myinfo') ? 'active' : null}>
-                  <Link to="/shippingandholiday/myinfo">My Info</Link>
-                </li>
-                
+              {listOfShippingAndHoliday}
               </ul>
             </div>
           </Collapse>
         </li>
-        <li className={this.isPathActive('/staticmessages') || this.state.staticmessagesMenuOpen ? 'active' : null}>
-          <a onClick={() => this.setState({ staticmessagesMenuOpen: !this.state.staticmessagesMenuOpen })} data-toggle="collapse">
+        <li   className={this.isPathActive('/staticpages') || this.state.staticpagesMenuOpen ? 'active' : null}>
+          <a onClick={() => this.setState({ staticpagesMenuOpen: !this.state.staticpagesMenuOpen })} data-toggle="collapse">
             <i className="pe-7s-news-paper"></i>
-            <p>Static Messages <b className="caret"></b></p>
+            <p> Static Messages <b className="caret"></b></p>
           </a>
-          <Collapse in={this.state.staticmessagesMenuOpen}>
+          <Collapse in={this.state.staticpagesMenuOpen}>
             <div>
-              <ul className="nav">
-                <li className={this.isPathActive('/staticmessages/accordion') ? 'active' : null}>
-                  <Link to="/staticmessages/accordion">Accordion</Link>
-                </li>
-                <li className={this.isPathActive('/staticmessages/catalog') ? 'active' : null}>
-                  <Link to="/staticmessages/catalog">Catalog</Link>
-                </li>
-                <li className={this.isPathActive('/staticmessages/myinfo') ? 'active' : null}>
-                  <Link to="/staticmessages/myinfo">My Info</Link>
-                </li>
-                
+            <ul className="nav">
+              {listOfStaticPages}
               </ul>
             </div>
           </Collapse>

@@ -6,11 +6,10 @@ import { setMobileNavVisibility } from '../../reducers/Layout';
 import { withRouter } from 'react-router-dom';
 
 import SideBar from '../../components/SideBar';
-/**
- * Pages
- */
 import Dashboard from '../Dashboard';
-import Tables from '../Tables';
+import StaticPagesTableRoute from '../StaticPages';
+import shippingInfosRoute from '../ShippingInfos';
+
 
 const Main = ({
   mobileNavVisibility,
@@ -31,8 +30,8 @@ const Main = ({
         <SideBar />
         <div className="main-panel">
           <Route exact path="/" component={Dashboard} />
-          <Route path="/shippingandholiday" component={Tables} />
-          <Route path="/staticmessages" component={Tables} />
+          <Route path="/staticpages" component={StaticPagesTableRoute} />
+          <Route path="/shippinginfos" component={shippingInfosRoute} />
         </div>
       </div>
     </div>

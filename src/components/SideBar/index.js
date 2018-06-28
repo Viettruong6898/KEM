@@ -21,9 +21,7 @@ class SideBar extends Component {
           <a href="https://www.kohls.com/" className="brand-name">
             <img src={'https://cdn.patchcdn.com/users/22872566/2016/03/T800x600/20160356eabb289c60c.jpg'} alt="logo" className="logo" />
           </a>
-
         </div>
-
         <div className="sidebar-wrapper">
           <UserInfo />
           <div className="line"></div>
