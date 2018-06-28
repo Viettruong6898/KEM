@@ -13,7 +13,7 @@ const Dashboard = () => (
       <button style={cardStyleTopRight} onClick={() => alert("This URL is not yet implemented")}>Assortment Creation & Management  </button>  
       <div style={{display : 'inline-block'}}> 
       <button style={cardStyleMiddleLeft} onClick={() => alert("This URL is not yet implemented")}> SEO Tools  </button> 
-      <Link style={cardStyleMiddleCenter} to={{pathname:`/`}}> Site Content & Messaging </Link> 
+      <Link onClick={() => alert("This redirects to the current URL")} style={cardStyleMiddleCenter} to={{pathname:`/`}}> Site Content & Messaging </Link> 
       <button style={cardStyleMiddleRight} onClick={() => alert("This URL is not yet implemented")}> Check Pricing & Inventory  </button> 
       <div style={{display : 'inline-block'}}> 
       <a style={cardStyleBottomLeft} href='http://10.208.17.221/reference-app/index.html'> Link Builder </a> 
@@ -128,7 +128,7 @@ const Dashboard = () => (
       borderRadius:'50px',
       borderColor:' black',
       borderWidth:'2',
-      fontSize:'150%'
+      fontSize:'125%'
       };
       var cardStyleBottomCenter = {
         display: 'flex',
@@ -162,7 +162,7 @@ var cardStyleTopRight = {
   borderRadius:'50px',
   borderColor:' black',
   borderWidth:'2',
-  fontSize:'120%'
+  fontSize:'110%'
   };
 
 var cardStyleMiddleRight = {

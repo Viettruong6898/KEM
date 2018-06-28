@@ -159,7 +159,7 @@ UpdatingData(data) {
 }
   render() {
     const options = {
-      sizePerPage: 20,
+      sizePerPage: 100,
       prePage: 'Previous',
       nextPage: 'Next',
       firstPage: 'First',
