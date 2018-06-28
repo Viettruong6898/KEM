@@ -130,8 +130,8 @@ a {
   > .sidebar-wrapper > .nav {
     > li {
       &.active > a {
-        color: red;
-        background: white;
+        color: white;
+        background: $sidebar-bg;
         border: 1px solid rgb(0, 3, 14);
       }
       > a {
@@ -140,7 +140,7 @@ a {
         color: $sidebar-color;
         &:hover {
           color: black;
-          background: gray;
+          background: white;
           border: 1px solid rgb(0, 3, 14);
         }
       }
@@ -158,7 +158,7 @@ a {
         > li  {
           &.active a {
             background: white;
-            color: red;
+            color: black;
             border: 1px solid rgb(0, 3, 14);
           }
           > a {
@@ -166,7 +166,7 @@ a {
             font-size: 13px;
             color: white;
             &:hover {
-              background: gray;
+              background: white;
               color: black;
               border: 1px solid rgb(0, 3, 14);
             }
