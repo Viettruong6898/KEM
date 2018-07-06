@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Link, withRouter } from 'react-router-dom';
+import { GeoJSONSource } from 'mapbox-gl';
 
 
 
@@ -26,7 +27,7 @@ class holidayListTable extends Component {
   
   jobNameValidator(value, row) {
     const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
-    if (!value) {
+    if (!row.holidayId) {
       response.isValid = false;
       response.notification.type = 'error';
       response.notification.msg = 'Please Enter a value for this column';
@@ -42,28 +43,31 @@ class holidayListTable extends Component {
 
    // this method is for sending data back to the backend
    onAfterInsertRow(row) {
-    var date = new Date();
     var needUpdate = false;
     this.id = row.id;
+    var boolean = true;
+    this.id= row.id;
+    if (row.active === "false") {
+      boolean = false;
+    }
     var updateValue = ({
-          id: row.id,
-          holidayId:row.holidayId,
+          holidayId: row.holidayId,
           holidayName: row.holidayName,
-          holidayDate: date.toISOString(),
-          active: row.active
+          holidayDate: row.holidayDate,
+          active: boolean
         })
     for (var item in this.state.data){
           if (this.id === this.state.data[item].id) {
             needUpdate = true;
             updateValue = ({
-              id: this.state.data.id,
               holidayId:row.holidayId,
-              holidayName: row.holidayName,
-              holidayDate: date.toISOString(),
-              active: row.active  
+              holidayName:row.holidayName,
+              holidayDate: row.holidayDate,
+              active: boolean  
               })
           }
         }
+        console.log(updateValue);
     if (needUpdate) {
       return this.UpdatingData(updateValue);
     } else{
@@ -72,12 +76,14 @@ class holidayListTable extends Component {
   }
 
   CreatingData(data) {
+
     const nData= JSON.stringify(data);
-    return fetch(`http://localhost:8080/${this.path}/all`, {
+    console.log(nData);
+    return fetch(`http://localhost:8080/shippinginfos/holidaylists/all`, {
     method: 'put',
     mode: 'cors',
     headers: {
-    'Content-Type': 'application/json'
+      'Content-Type': 'application/json'
     },
     body: nData
     }).then(res => {
@@ -87,28 +93,29 @@ class holidayListTable extends Component {
 
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
-    var date = new Date();
+    var boolean = true;
+    this.id= row.id;
+    if (row.active === "false") {
+      boolean = false;
+    }
     var newValue = ({
-      id: row.id,
       holidayId:row.holidayId,
-      holidayName: row.holidayName,
-      holidayDate: date.toISOString(),
-      active: row.active
+      holidayName:row.holidayName,
+      holidayDate: row.holidayDate,
+      active: boolean
       })
     alert(`Sucessfully saved the value!`);
     return this.UpdatingData(newValue);
 }
 
   UpdatingData(data) {
-    const nData= JSON.stringify(data);
-    return fetch(`http://localhost:8080${this.path}/${this.id}`, {
+    return fetch(`http://localhost:8080/shippinginfos/holidaylists/${this.id}`, {
     method: 'PATCH',
     mode: 'cors',
     headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+      'Content-Type': 'application/json',
     },
-    body: nData
+    body: JSON.stringify(data)
     }).then(res => {
     return res;
     }).catch(err => alert(err));
@@ -128,7 +135,7 @@ class holidayListTable extends Component {
           datas.push({
             id: data[each].id,
             holidayId: data[each].holidayId,
-            holidayName: data[each].holidayName,
+            holidayName:data[each].holidayName,
             holidayDate: data[each].holidayDate,
             active: data[each].active
         });
@@ -187,36 +194,39 @@ class holidayListTable extends Component {
                   validator={this.jobNameValidator}
                   hover={true}
                   >
-                  <TableHeaderColumn
+                   <TableHeaderColumn
                     dataField='id'
-                    width="15%"
-                    
+                    width="25%"
                     isKey
                     editable={{type:'textarea',readOnly:true, validator: this.jobNameValidator}}
                     dataSort
+                    hiddenOnInsert
+                    autoValue
                     >
-                    ID
+                    id
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     dataField='holidayId'
                     width="10%"
                     editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     holidayId
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     dataField='holidayName'
-                    width="20%"
-                    editable={ { type: 'textarea',readOnly:true, validator: this.jobNameValidator }}
+                    width="10%"
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     holidayName
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     dataField='holidayDate'
                     width="20%"
-                    editable={ { type: 'textarea',readOnly:true, validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
                     >
                     holidayDate

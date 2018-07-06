@@ -10,7 +10,7 @@ const shippingInfosRoute = ({match}) => (
     <Route path={`${match.url}/shippingmasters`} component={shippingMasterTable} />
     <Route path={`${match.url}/defaultshippings`} component={defaultShippingTable} />
     <Route path={`${match.url}/holidaylists`} component={holidayListTable} />
-    <Route path={`${match.url}/:shippingmaster`} component={shippingMethodsTable} />
+    <Route path={`${match.url}/shippingmethods`} component={shippingMethodsTable} />
   </div>
 );
 

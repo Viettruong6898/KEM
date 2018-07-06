@@ -5,15 +5,15 @@ import { Collapse } from 'react-bootstrap';
 
 class Nav extends Component {
   staticPages = [];
-  shippingAndHolidayPages =["shippingmaster"];
+  shippingAndHolidayPages =["defaultshippings","holidaylists","shippingmethods"];
   page = "";
 
   getDataStaticPages = async() => {
     const api_call = await fetch("http://localhost:8080/staticpages/all");
     const data = await api_call.json();
     for (var item in data) {
-      if (data[item].pagename !== null && data[item].pagename !== undefined) {
-      this.staticPages.push(data[item].pagename); }
+      if (data[item].pagen !== null && data[item].page !== undefined) {
+      this.staticPages.push(data[item].page); }
     }
 
     return null;

@@ -95,6 +95,7 @@ class shippingMasterTable extends Component {
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
     var date = new Date();
+    this.id
     var newValue = ({
           id: row.id,
           shipTierId: row.shipTierId,
@@ -176,7 +177,8 @@ class shippingMasterTable extends Component {
       lastPage: 'Last',
       hideSizePerPage: true,
       afterSaveCell: this.onAfterSaveCell,
-      afterInsertRow: this.onAfterInsertRow.bind(this)
+      afterInsertRow: this.onAfterInsertRow.bind(this),
+      insertText: 'Create New Method'
     };
     return (
       <div className="container-fluid">
@@ -203,10 +205,11 @@ class shippingMasterTable extends Component {
                   <TableHeaderColumn
                     dataField='id'
                     width="15%"
-                    
                     isKey
                     editable={{type:'textarea',readOnly:true, validator: this.jobNameValidator}}
                     dataSort
+                    hiddenOnInsert
+                    autoValue={this.id}
                     >
                     ID
                   </TableHeaderColumn>

@@ -27,7 +27,7 @@ class defaultShippingTable extends Component {
   
   jobNameValidator(value, row) {
     const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
-    if (!value) {
+    if (!row.defaultShipMethodId) {
       response.isValid = false;
       response.notification.type = 'error';
       response.notification.msg = 'Please Enter a value for this column';
@@ -46,7 +46,6 @@ class defaultShippingTable extends Component {
     var needUpdate = false;
     this.id = row.id;
     var updateValue = ({
-        id: row.id,
         defaultShipMethodId: row.defaultShipMethodId,
         shipMethodName: row.shipMethodName,
         shippingMethodServiceCode: row.shippingMethodServiceCode
@@ -72,11 +71,12 @@ class defaultShippingTable extends Component {
 
   CreatingData(data) {
     const nData= JSON.stringify(data);
-    return fetch(`http://localhost:8080/${this.path}/all`, {
+    return fetch("http://localhost:8080/shippinginfos/defaultshippings/all", {
     method: 'put',
     mode: 'cors',
     headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
     },
     body: nData
     }).then(res => {
@@ -86,8 +86,8 @@ class defaultShippingTable extends Component {
 
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
+    this.id = row.id;
     var newValue = ({
-        id: row.id,
         defaultShipMethodId: row.defaultShipMethodId,
         shipMethodName: row.shipMethodName,
         shippingMethodServiceCode: row.shippingMethodServiceCode
@@ -97,15 +97,13 @@ class defaultShippingTable extends Component {
 }
 
   UpdatingData(data) {
-    const nData= JSON.stringify(data);
-    return fetch(`http://localhost:8080${this.path}/${this.id}`, {
+    return fetch(`http://localhost:8080/shippinginfos/defaultshippings/${this.id}`, {
     method: 'PATCH',
     mode: 'cors',
     headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    'Content-Type': 'application/json'
     },
-    body: nData
+    body: JSON.stringify(data)
     }).then(res => {
     return res;
     }).catch(err => alert(err));
@@ -113,7 +111,7 @@ class defaultShippingTable extends Component {
 
     getDifferentPageName = async() => {
       this.path = this.props.location.pathname;
-      const api_call = await fetch(`http://localhost:8080/${this.path}/all`);
+      const api_call = await fetch(`http://localhost:8080/shippinginfos/defaultshippings/all`);
       const data = await api_call.json(); 
       const datas = [] 
       for (var each in data) {
@@ -127,9 +125,12 @@ class defaultShippingTable extends Component {
             defaultShipMethodId: data[each].defaultShipMethodId,
             shipMethodName: data[each].shipMethodName,
             shippingMethodServiceCode: data[each].shippingMethodServiceCode
-        });
-        } }
-      return datas; }
+        }
+      );
+        } 
+      }
+      return datas; 
+    }
 
   state = {
   };
@@ -182,40 +183,44 @@ class defaultShippingTable extends Component {
                   selectRow={ this.selectRowProp }
                   validator={this.jobNameValidator}
                   hover={true}
+                  
                   >
                   <TableHeaderColumn
                     dataField='id'
                     width="25%"
-                    
                     isKey
                     editable={{type:'textarea',readOnly:true, validator: this.jobNameValidator}}
                     dataSort
+                    hiddenOnInsert
+                    autoValue
                     >
-                    ID
+                    id
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     dataField='defaultShipMethodId'
                     width="20%"
                     editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
-                    DefaultShipMethodId
+                    defaultShipMethodId
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     dataField='shipMethodName'
                     width="20%"
-                    editable={ { type: 'textarea',readOnly:true, validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
-                    ShipMethodName
+                    shipMethodName
                   </TableHeaderColumn>
                   <TableHeaderColumn
-                    dataField='shippingmethodServiceCode'
+                    dataField='shippingMethodServiceCode'
                     width="20%"
-                    editable={ { type: 'textarea',readOnly:true, validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
                     >
-                    ShippingmethodServiceCode
+                    shippingmethodServiceCode
                   </TableHeaderColumn>
                 </BootstrapTable>
               </div>

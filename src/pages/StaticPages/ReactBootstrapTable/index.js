@@ -6,7 +6,7 @@ import { Link} from 'react-router-dom';
 
 
 class StaticPagesTable extends Component {
-  pagename = ""
+  page = ""
   id = ""
   path = "";
 
@@ -14,7 +14,7 @@ class StaticPagesTable extends Component {
     mode: 'checkbox',
     bgColor: 'pink', 
     hideSelectColumn: true, 
-    clickToSelect: true
+    clickToSelect: true,
   };
   cellEditProp = {
     mode: 'click',
@@ -43,24 +43,24 @@ class StaticPagesTable extends Component {
     var dict = {};
     var keyy = row.keys;
     var value = row.value;
-    var pageNameToLower = this.pagename.toLowerCase();
+    var pageToLower = this.page.toLowerCase();
     dict[keyy] = `${value}`;
     var needUpdate = false;
     var newValue = ({
-      pagename: pageNameToLower,
+      page: pageToLower,
       messages: dict
       })
     var updateValue = ({
         id: row.id,
-        pagename: pageNameToLower,
+        page: pageToLower,
         messages: dict
         })
     for (var item in this.state.data){
-          if (this.pagename === this.state.data[item].pagename) {
+          if (this.page === this.state.data[item].page) {
             needUpdate = true;
             updateValue = ({
               id: this.state.data[item].id,
-              pagename: pageNameToLower,
+              page: pageToLower,
               messages: dict
               })
           }
@@ -83,6 +83,7 @@ class StaticPagesTable extends Component {
     },
     body: nData
     }).then(res => {
+      console.log(res);
     return res;
     }).catch(err => alert(err));
     }
@@ -95,7 +96,7 @@ class StaticPagesTable extends Component {
     dict[keyy] = `${value}`;
     var newValue = ({
       id: row.id,
-      pagename: this.pagename,
+      page: this.page,
       messages: dict
       })
     alert(`Sucessfully saved the value: ${value}`);
@@ -117,20 +118,20 @@ UpdatingData(data) {
   }).catch(err => alert(err));
   }
 
-  getDifferentPageName = async() => {
+  getDifferentPage = async() => {
     this.path = this.props.location.pathname;
     const api_call = await fetch(`http://localhost:8080${this.path}`);
     const data = await api_call.json(); 
     const datas = [] 
     if (data.id===undefined) {
       alert('This url is not Valid: Please check for correction');
-      return <Link to="http://localhost:8080/">Home</Link>
+      return <Link to="http://localhost:8080/dashboard">Home</Link>
     } else {
-    this.pagename = data.pagename.charAt(0).toUpperCase() + data.pagename.slice(1);
+    this.page = data.page.charAt(0).toUpperCase() + data.page.slice(1);
     this.id=data.id;
     for (var key in data.messages){
         datas.push({
-          pagename: this.pagename,
+          page: this.page,
           id: this.id,
           keys: key,
           value: data.messages[key]
@@ -143,13 +144,13 @@ UpdatingData(data) {
   };
   
   componentDidMount() {
-    this.getDifferentPageName().then(result => this.setState({
+    this.getDifferentPage().then(result => this.setState({
       data: result
     }))}
 
    componentDidUpdate(prevProps,prevState) {
      if (prevProps !== this.props) {
-    this.getDifferentPageName().then(result => this.setState({
+    this.getDifferentPage().then(result => this.setState({
       data: result
     }))}
 }
@@ -157,6 +158,7 @@ UpdatingData(data) {
   componentWillReceiveProps(props) {
     this.setState(props);
 }
+
   render() {
     const options = {
       sizePerPage: 100,
@@ -166,7 +168,8 @@ UpdatingData(data) {
       lastPage: 'Last',
       hideSizePerPage: true,
       afterSaveCell: this.onAfterSaveCell,
-      afterInsertRow: this.onAfterInsertRow.bind(this)
+      afterInsertRow: this.onAfterInsertRow.bind(this),
+      insertText: 'Create New Message'
     };
     return (
       <div className="container-fluid">
@@ -174,7 +177,7 @@ UpdatingData(data) {
           <div className="col-md-12">
             <div className="card">
               <div className="header">
-                <h4>{this.pagename}</h4>
+                <h4>{this.page}</h4>
               </div>
               <div className="content">
                 <BootstrapTable
@@ -188,13 +191,16 @@ UpdatingData(data) {
                   selectRow={ this.selectRowProp }
                   validator={this.jobNameValidator}
                   hover={true}
+                  expandableRow={ this.isExpandableRow }
                   >
                    <TableHeaderColumn
                     dataField='id'
                     width="15%"
-                    isKey
                     editable={{type:'textarea',readOnly:true, validator: this.jobNameValidator}}
                     dataSort
+                    isKey
+                    hiddenOnInsert
+                    autoValue
                     >
                     ID
                   </TableHeaderColumn>

@@ -95,6 +95,7 @@ class shippingMethodsTable extends Component {
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
     var date = new Date();
+    this.id=row.id;
     var newValue = ({
           id: row.id,
           shipTierId: row.shipTierId,
@@ -130,20 +131,26 @@ class shippingMethodsTable extends Component {
       const data = await api_call.json(); 
       const datas = [] 
       for (var each in data) {
-      if (data[each].id===undefined) {
+      if (data[each].methodID===undefined) {
         alert('This url is not Valid: Please check for correction');
         return <Link to="http://localhost:8080/">Home</Link>
       } else {
         this.id = data[each].id
           datas.push({
-            id: data[each].id,
-            shipTierId: data[each].shipTierId,
-            createdDate: data[each].createdDate,
-            updatedDate: data[each].updatedDate,
-            displayName: data[each].displayName,
-            minBound: data[each].minBound,
-            maxBound: data[each].maxBound,
-            shipRate: data[each].shipRate
+            methodID: data[each].methodID,
+            methodName: data[each].methodName,
+            methodCode: data[each].methodCode,
+            incrementCharge: data[each].incrementCharge,
+            incrementLimit: data[each].incrementLimit,
+            minShippingLeadDays: data[each].minShippingLeadDays,
+            maxShippingLeadDays: data[each].maxShippingLeadDays,
+            active: data[each].active,
+            cutOffTime: data[each].cutOffTime,
+            qualifiedStateCodes: data[each].qualifiedStateCodes,
+            nonQualifiedStateCodes: data[each].nonQualifiedStateCodes,
+            showCuttOffMessage: data[each].showCuttOffMessage,
+            shippingServiceCodes: data[each].shippingServiceCodes,
+            tierGroup: data[each].tierGroup
         });
         } }
       return datas; }
@@ -201,73 +208,128 @@ class shippingMethodsTable extends Component {
                   hover={true}
                   >
                   <TableHeaderColumn
-                    dataField='id'
-                    width="15%"
-                    
+                    dataField='methodID'
+                    width="10%"
                     isKey
                     editable={{type:'textarea',readOnly:true, validator: this.jobNameValidator}}
                     dataSort
+                    hiddenOnInsert
+                    autoValue
                     >
-                    ID
+                    methodID
                   </TableHeaderColumn>
                   <TableHeaderColumn
-                    dataField='shipTierId'
-                    width="10%"
+                    dataField='methodName'
+                    width="13%"
                     editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
                     >
-                    ShipTierId
+                    methodName
                   </TableHeaderColumn>
                   <TableHeaderColumn
-                    dataField='createdDate'
-                    width="20%"
+                    dataField='methodCode'
+                    width="13%"
                     editable={ { type: 'textarea',readOnly:true, validator: this.jobNameValidator }}
                     dataSort
                     >
-                    createdDate
+                    methodCode
                   </TableHeaderColumn>
                   <TableHeaderColumn
-                    dataField='updatedDate'
-                    width="20%"
+                    dataField='incrementCharge'
+                    width="14%"
                     editable={ { type: 'textarea',readOnly:true, validator: this.jobNameValidator }}
                     dataSort
                     >
-                    updatedDate
+                    incrementCharge
                   </TableHeaderColumn>
                   <TableHeaderColumn
-                    dataField='displayName'
+                    dataField='incrementLimit'
+                    width="13%"
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    dataSort
+                    >
+                    incrementLimit
+                  </TableHeaderColumn>
+                  
+                  <TableHeaderColumn
+                    dataField='minShippingLeadDays'
                     width="15%"
                     editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
                     >
-                    displayName
-                  </TableHeaderColumn>
-                  
-                  <TableHeaderColumn
-                    dataField='minBound'
-                    width="10%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
-                    dataSort
-                    >
-                    minBound
+                    minShipLeadDays
                   </TableHeaderColumn>
 
                   <TableHeaderColumn
-                    dataField='maxBound'
-                    width="10%"
+                    dataField='maxShippingLeadDays'
+                    width="15%"
                     editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
                     >
-                    maxBound
+                    maxShipLeadDays
                   </TableHeaderColumn>
 
                   <TableHeaderColumn
-                    dataField='shipRate'
+                    dataField='active'
                     width="10%"
                     editable={ { type: 'textarea', validator: this.jobNameValidator }}
                     dataSort
                     >
-                    shipRate
+                    active
+                  </TableHeaderColumn>
+
+                  <TableHeaderColumn
+                    dataField='cutOffTime'
+                    width="13%"
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    dataSort
+                    >
+                    cutOffTime
+                  </TableHeaderColumn>
+
+                  <TableHeaderColumn
+                    dataField='qualifiedStateCodes'
+                    width="10%"
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    dataSort
+                    >
+                    qualifiedStateCodes
+                  </TableHeaderColumn>
+
+                  <TableHeaderColumn
+                    dataField='nonQualifiedStateCodes'
+                    width="10%"
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    dataSort
+                    >
+                    nonQualifiedStateCodes
+                  </TableHeaderColumn>
+
+                  <TableHeaderColumn
+                    dataField='showCutOffMessage'
+                    width="13%"
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    dataSort
+                    >
+                   showCutOffMessage
+                  </TableHeaderColumn>
+
+                  <TableHeaderColumn
+                    dataField='shippingServiceCodes'
+                    width="10%"
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    dataSort
+                    >
+                   shippingServiceCodes
+                  </TableHeaderColumn>
+
+                  <TableHeaderColumn
+                    dataField='tierGroup'
+                    width="10%"
+                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    dataSort
+                    >
+                   tierGroup
                   </TableHeaderColumn>
                 </BootstrapTable>
               </div>
