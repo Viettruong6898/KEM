@@ -95,7 +95,7 @@ class shippingMasterTable extends Component {
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
     var date = new Date();
-    this.id
+    this.id = row.id;
     var newValue = ({
           id: row.id,
           shipTierId: row.shipTierId,
