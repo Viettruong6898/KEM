@@ -38,7 +38,7 @@ class shippingMethodsTable extends Component {
     if (value !== 'false' && value !== 'true') {
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'This field only accepts, please put either true or false';
+      response.notification.msg = 'This field only accepts booleans, please put either true or false';
       response.notification.title = 'Error: Invalid Type';
     } 
     return response;
@@ -49,7 +49,7 @@ class shippingMethodsTable extends Component {
     if (String(parseInt(number)) !== number) {
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'This field only accepts numbers';
+      response.notification.msg = 'This field only accepts numbers and list of numbers ex:3,4';
       response.notification.title = 'Error: Invalid Type';
     } 
     return response;
@@ -289,6 +289,7 @@ class shippingMethodsTable extends Component {
                     width="9%"
                     editable={ { type: 'textarea' }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     mName
                   </TableHeaderColumn>
@@ -297,6 +298,7 @@ class shippingMethodsTable extends Component {
                     width="7%"
                     editable={ { type: 'textarea' }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     mCode
                   </TableHeaderColumn>
@@ -305,6 +307,7 @@ class shippingMethodsTable extends Component {
                     width="4%"
                     editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     iC
                   </TableHeaderColumn>
@@ -313,6 +316,7 @@ class shippingMethodsTable extends Component {
                     width="5%"
                     editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     iL
                   </TableHeaderColumn>
@@ -322,6 +326,7 @@ class shippingMethodsTable extends Component {
                     width="7%"
                     editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     minSLD
                   </TableHeaderColumn>
@@ -331,6 +336,7 @@ class shippingMethodsTable extends Component {
                     width="7%"
                     editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     maxSLD
                   </TableHeaderColumn>
@@ -340,6 +346,7 @@ class shippingMethodsTable extends Component {
                     width="5%"
                     editable={ { type: 'textarea', validator: this.booleanValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     active
                   </TableHeaderColumn>
@@ -349,6 +356,7 @@ class shippingMethodsTable extends Component {
                     width="5%"
                     editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     cOT
                   </TableHeaderColumn>
@@ -358,6 +366,7 @@ class shippingMethodsTable extends Component {
                     width="4%"
                     editable={ { type: 'textarea' }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     qSC
                   </TableHeaderColumn>
@@ -367,6 +376,7 @@ class shippingMethodsTable extends Component {
                     width="5%"
                     editable={ { type: 'textarea' }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     nQSC
                   </TableHeaderColumn>
@@ -376,6 +386,7 @@ class shippingMethodsTable extends Component {
                     width="6%"
                     editable={ { type: 'textarea', validator: this.booleanValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                    sCOM
                   </TableHeaderColumn>
@@ -385,6 +396,7 @@ class shippingMethodsTable extends Component {
                     width="4%"
                     editable={ { type: 'textarea', validator: this.numberArrayValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                    sSC
                   </TableHeaderColumn>
@@ -393,6 +405,7 @@ class shippingMethodsTable extends Component {
                     width="40%"
                     editable={ { type: 'textarea'}}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                    tierGroup
                   </TableHeaderColumn>

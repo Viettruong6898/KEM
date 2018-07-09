@@ -29,13 +29,7 @@ class StaticPagesTable extends Component {
       response.isValid = false;
       response.notification.type = 'error';
       response.notification.msg = 'Please Enter a value for this key';
-      response.notification.title = 'Error: Value is None';
-    } else if (value === "amazon") {
-      response.isValid = false;
-      response.notification.type = 'error';
-      response.notification.msg = 'BOOOOOOO';
-      response.notification.title = 'Error: Value is invalid';
-    }
+      response.notification.title = 'Error: Value is None';}
     return response;
   }
    // this method is for sending data back to the backend

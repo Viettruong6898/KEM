@@ -40,7 +40,7 @@ class holidayListTable extends Component {
     if (value !== 'false' && value !== 'true') {
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'This field only accepts, please put either true or false';
+      response.notification.msg = 'This field only accepts booleans, please put either true or false';
       response.notification.title = 'Error: Invalid Type';
     } 
     return response;
@@ -52,7 +52,7 @@ class holidayListTable extends Component {
     if (value !== time){
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'Please input this date an in ISO format';
+      response.notification.msg = 'Please input this date as an ISO format';
       response.notification.title = 'Error: Invalid Type';
     } 
     return response;
@@ -215,6 +215,7 @@ class holidayListTable extends Component {
                     width="15%"
                     isKey
                     editable={{type:'textarea',readOnly:true}}
+                    filter={ { type: 'TextFilter'} }
                     dataSort
                     hiddenOnInsert
                     autoValue
@@ -244,6 +245,7 @@ class holidayListTable extends Component {
                     width="20%"
                     editable={ { type: 'textarea',validator:this.dateValidator}}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     holidayDate
                   </TableHeaderColumn>
@@ -252,6 +254,7 @@ class holidayListTable extends Component {
                     width="15%"
                     editable={ { type: 'textarea',validator: this.booleanValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     active?
                   </TableHeaderColumn>

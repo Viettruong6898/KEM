@@ -36,6 +36,7 @@ class defaultShippingTable extends Component {
     return response;
   }
 
+
    // this method is for sending data back to the backend
    onAfterInsertRow(row) {
     var needUpdate = false;
@@ -187,6 +188,7 @@ class defaultShippingTable extends Component {
                     dataSort
                     hiddenOnInsert
                     autoValue
+                    filter={ { type: 'TextFilter'} }
                     >
                     id
                   </TableHeaderColumn>
@@ -213,6 +215,7 @@ class defaultShippingTable extends Component {
                     width="20%"
                     editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
+                    filter={ { type: 'TextFilter'} }
                     >
                     shippingmethodServiceCode
                   </TableHeaderColumn>
