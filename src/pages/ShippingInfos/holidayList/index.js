@@ -3,6 +3,7 @@ import { BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Link, withRouter } from 'react-router-dom';
 import { GeoJSONSource } from 'mapbox-gl';
+import { ISO_8601 } from 'moment';
 
 
 
@@ -21,23 +22,39 @@ class holidayListTable extends Component {
   cellEditProp = {
     mode: 'click',
     blurToSave: true,
-    beforeSaveCell: this.jobNameValidator.bind(this),
     afterSaveCell: this.onAfterSaveCell.bind(this)
   };
   
-  jobNameValidator(value, row) {
+  numberValidator(value, row) {
     const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
-    if (!row.holidayId) {
+    if (String(parseInt(value)) !== value && String(parseInt(value)).concat(".0") !== value) {
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'Please Enter a value for this column';
-      response.notification.title = 'Error: Value is None';
-    } else if (value === "amazon") {
+      response.notification.msg = 'This field only accepts numbers';
+      response.notification.title = 'Error: Invalid Type';
+    } 
+    return response;
+  }
+  booleanValidator(value, row) {
+    const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
+    if (value !== 'false' && value !== 'true') {
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'BOOOOOOO';
-      response.notification.title = 'Error: Value is invalid';
-    }
+      response.notification.msg = 'This field only accepts, please put either true or false';
+      response.notification.title = 'Error: Invalid Type';
+    } 
+    return response;
+  }
+  dateValidator(value, row) {
+    const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
+    var time = value.slice(0,4).concat("-",value.slice(5,7),"-",value.slice(8,13),
+    ":",value.slice(14,16),":",value.slice(17,19),".",value.slice(20,23),"+",value.slice(24,28))
+    if (value !== time){
+      response.isValid = false;
+      response.notification.type = 'error';
+      response.notification.msg = 'Please input this date an in ISO format';
+      response.notification.title = 'Error: Invalid Type';
+    } 
     return response;
   }
 
@@ -67,7 +84,6 @@ class holidayListTable extends Component {
               })
           }
         }
-        console.log(updateValue);
     if (needUpdate) {
       return this.UpdatingData(updateValue);
     } else{
@@ -76,9 +92,7 @@ class holidayListTable extends Component {
   }
 
   CreatingData(data) {
-
     const nData= JSON.stringify(data);
-    console.log(nData);
     return fetch(`http://localhost:8080/shippinginfos/holidaylists/all`, {
     method: 'put',
     mode: 'cors',
@@ -87,6 +101,7 @@ class holidayListTable extends Component {
     },
     body: nData
     }).then(res => {
+      alert(`Sucessfully saved the value!`);
     return res;
     }).catch(err => alert(err));
     }
@@ -99,12 +114,11 @@ class holidayListTable extends Component {
       boolean = false;
     }
     var newValue = ({
-      holidayId:row.holidayId,
-      holidayName:row.holidayName,
+      holidayId: Number(row.holidayId),
+      holidayName: row.holidayName,
       holidayDate: row.holidayDate,
-      active: boolean
+      active:  Boolean(boolean)
       })
-    alert(`Sucessfully saved the value!`);
     return this.UpdatingData(newValue);
 }
 
@@ -117,8 +131,10 @@ class holidayListTable extends Component {
     },
     body: JSON.stringify(data)
     }).then(res => {
+      alert(`Sucessfully saved the value!`);
     return res;
     }).catch(err => alert(err));
+    
     }
 
     getDifferentPageName = async() => {
@@ -156,6 +172,7 @@ class holidayListTable extends Component {
       data: result
     }))}
 }
+
   
   componentWillReceiveProps(props) {
     this.setState(props);
@@ -191,14 +208,13 @@ class holidayListTable extends Component {
                   pagination={true}
                   options={options}
                   selectRow={ this.selectRowProp }
-                  validator={this.jobNameValidator}
                   hover={true}
                   >
                    <TableHeaderColumn
                     dataField='id'
-                    width="25%"
+                    width="15%"
                     isKey
-                    editable={{type:'textarea',readOnly:true, validator: this.jobNameValidator}}
+                    editable={{type:'textarea',readOnly:true}}
                     dataSort
                     hiddenOnInsert
                     autoValue
@@ -208,7 +224,7 @@ class holidayListTable extends Component {
                   <TableHeaderColumn
                     dataField='holidayId'
                     width="10%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
                     filter={ { type: 'TextFilter'} }
                     >
@@ -217,7 +233,7 @@ class holidayListTable extends Component {
                   <TableHeaderColumn
                     dataField='holidayName'
                     width="10%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea' }}
                     dataSort
                     filter={ { type: 'TextFilter'} }
                     >
@@ -226,7 +242,7 @@ class holidayListTable extends Component {
                   <TableHeaderColumn
                     dataField='holidayDate'
                     width="20%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea',validator:this.dateValidator}}
                     dataSort
                     >
                     holidayDate
@@ -234,7 +250,7 @@ class holidayListTable extends Component {
                   <TableHeaderColumn
                     dataField='active'
                     width="15%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea',validator: this.booleanValidator }}
                     dataSort
                     >
                     active?

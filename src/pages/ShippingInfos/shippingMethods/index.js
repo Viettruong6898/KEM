@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Link, withRouter } from 'react-router-dom';
-import Datetime from 'react-datetime';
 
 
 
@@ -21,23 +20,38 @@ class shippingMethodsTable extends Component {
   cellEditProp = {
     mode: 'click',
     blurToSave: true,
-    beforeSaveCell: this.jobNameValidator.bind(this),
     afterSaveCell: this.onAfterSaveCell.bind(this)
   };
   
-  jobNameValidator(value, row) {
+  numberValidator(value, row) {
     const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
-    if (!value) {
+    if (String(parseInt(value)) !== value && String(parseInt(value)).concat(".0") !== value ) {
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'Please Enter a value for this column';
-      response.notification.title = 'Error: Value is None';
-    } else if (value === "amazon") {
+      response.notification.msg = 'This field only accepts numbers';
+      response.notification.title = 'Error: Invalid Type';
+    } 
+    return response;
+  }
+  booleanValidator(value, row) {
+    const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
+    if (value !== 'false' && value !== 'true') {
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'BOOOOOOO';
-      response.notification.title = 'Error: Value is invalid';
-    }
+      response.notification.msg = 'This field only accepts, please put either true or false';
+      response.notification.title = 'Error: Invalid Type';
+    } 
+    return response;
+  }
+  numberArrayValidator(value,row) {    
+    const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
+    const number = value.replace(',','')
+    if (String(parseInt(number)) !== number) {
+      response.isValid = false;
+      response.notification.type = 'error';
+      response.notification.msg = 'This field only accepts numbers';
+      response.notification.title = 'Error: Invalid Type';
+    } 
     return response;
   }
 
@@ -51,21 +65,21 @@ class shippingMethodsTable extends Component {
       methodCode: row.methodCode,
       incrementCharge: row.incrementCharge,
       incrementLimit: row.incrementLimit,
-      minShippingLeadDays: row.minShippingLeadDays,
-      maxShippingLeadDays: row.maxShippingLeadDays,
-      active: row.active,
-      cutOffTime: row.cutOffTime,
-      qualifiedStateCodes: row.qualifiedStateCodes,
-      nonQualifiedStateCodes: row.nonQualifiedStateCodes,
-      showCuttOffMessage: row.showCuttOffMessage,
-      shippingServiceCodes: row.shippingServiceCodes,
-      tierGroup: JSON.stringify(row.tierGroup)
+      minShippingLeadDays: Number(row.minShippingLeadDays),
+      maxShippingLeadDays:  Number(row.maxShippingLeadDays),
+      active: Boolean(row.active),
+      cutOffTime: Number(row.cutOffTime),
+      qualifiedStateCodes: Array(row.qualifiedStateCodes),
+      nonQualifiedStateCodes: Array(row.nonQualifiedStateCodes),
+      showCutOffMessage: Boolean(row.showCutOffMessage),
+      shippingServiceCodes: Array(row.shippingServiceCodes),
+      tierGroup: row.tierGroup
         })
     for (var item in this.state.data){
           if (this.id === this.state.data[item].id) {
             needUpdate = true;
             updateValue = ({
-              methodID: row.methodID,
+              methodID: this.id,
               methodName: row.methodName,
               methodCode: row.methodCode,
               incrementCharge: row.incrementCharge,
@@ -76,9 +90,9 @@ class shippingMethodsTable extends Component {
               cutOffTime: row.cutOffTime,
               qualifiedStateCodes: row.qualifiedStateCodes,
               nonQualifiedStateCodes: row.nonQualifiedStateCodes,
-              showCuttOffMessage: row.showCuttOffMessage,
+              showCutOffMessage: row.showCutOffMessage,
               shippingServiceCodes: row.shippingServiceCodes,
-              tierGroup: JSON.stringify(row.tierGroup)
+              tierGroup: row.tierGroup
               })
           }
         }
@@ -90,14 +104,23 @@ class shippingMethodsTable extends Component {
   }
 
   CreatingData(data) {
-    const nData= JSON.stringify(data);
+    // if the format isnt correct it will not be able to create the content everything is alreay parsed correctly above
+    const tierGroupData= JSON.stringify(data,["tierGroup"]).replace(/\\n/g, "").replace(/\\/g, "");
+    const tgKey = tierGroupData.slice(1,13);
+    const tgVal = tierGroupData.slice(14,-2);
+    const otherData = JSON.stringify(data,["methodID","methodName","methodCode","incrementCharge","incrementLimit","minShippingLeadDays"
+  ,"maxShippingLeadDays","active","cutOffTime","qualifiedStateCodes","nonQualifiedStateCodes",
+  "showCuttOffMessage","shippingServiceCodes"]).replace(/\\/g, "");
+    const retData= otherData.slice(0,-1).concat(",",tgKey,"{",tgVal,"}")
+    console.log(retData);
     return fetch(`http://localhost:8080/shippinginfos/shippingmethods/all`, {
     method: 'put',
     mode: 'cors',
     headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
     },
-    body: nData
+    body: retData
     }).then(res => {
     return res;
     }).catch(err => alert(err));
@@ -118,7 +141,7 @@ class shippingMethodsTable extends Component {
       cutOffTime: row.cutOffTime,
       qualifiedStateCodes: row.qualifiedStateCodes,
       nonQualifiedStateCodes: row.nonQualifiedStateCodes,
-      showCuttOffMessage: row.showCuttOffMessage,
+      showCutOffMessage: row.showCutOffMessage,
       shippingServiceCodes: row.shippingServiceCodes,
       tierGroup: row.tierGroup
       })
@@ -134,13 +157,11 @@ class shippingMethodsTable extends Component {
   ,"maxShippingLeadDays","active","cutOffTime","qualifiedStateCodes","nonQualifiedStateCodes",
   "showCuttOffMessage","shippingServiceCodes"]).replace(/\\/g, "");
     const retData= otherData.slice(0,-1).concat(",",tgKey,tgVal,"}")
-    console.log(retData);
     return fetch(`http://localhost:8080/shippinginfos/shippingmethods/${this.id}`, {
     method: 'PATCH',
     mode: 'cors',
     headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Content-Type': 'application/json'
     },
     body: retData
     }).then(res => {
@@ -154,7 +175,7 @@ class shippingMethodsTable extends Component {
       const data = await api_call.json(); 
       const datas = [] 
       for (var each in data) {
-      if (data[each].methodID===undefined) {
+      if (data[each].id===undefined) {
         alert('This url is not Valid: Please check for correction');
         return <Link to="http://localhost:8080/">Home</Link>
       } else {
@@ -172,7 +193,7 @@ class shippingMethodsTable extends Component {
             cutOffTime: data[each].cutOffTime,
             qualifiedStateCodes: data[each].qualifiedStateCodes,
             nonQualifiedStateCodes: data[each].nonQualifiedStateCodes,
-            showCuttOffMessage: data[each].showCuttOffMessage,
+            showCutOffMessage: data[each].showCutOffMessage,
             shippingServiceCodes: data[each].shippingServiceCodes,
             tierGroup: JSON.stringify(data[each].tierGroup)
         });
@@ -240,7 +261,6 @@ class shippingMethodsTable extends Component {
                   pagination={true}
                   options={options}
                   selectRow={ this.selectRowProp }
-                  validator={this.jobNameValidator}
                   hover={true}
                   >
                   <TableHeaderColumn
@@ -258,7 +278,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='methodID'
                     width="5%"
-                    editable={{type:'textarea', validator: this.jobNameValidator}}
+                    editable={{type:'textarea', validator: this.numberValidator}}
                     dataSort
                     filter={ { type: 'TextFilter'} }
                     >
@@ -267,7 +287,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='methodName'
                     width="9%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea' }}
                     dataSort
                     >
                     mName
@@ -275,7 +295,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='methodCode'
                     width="7%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea' }}
                     dataSort
                     >
                     mCode
@@ -283,7 +303,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='incrementCharge'
                     width="4%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
                     >
                     iC
@@ -291,7 +311,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='incrementLimit'
                     width="5%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
                     >
                     iL
@@ -300,7 +320,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='minShippingLeadDays'
                     width="7%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
                     >
                     minSLD
@@ -309,7 +329,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='maxShippingLeadDays'
                     width="7%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
                     >
                     maxSLD
@@ -318,7 +338,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='active'
                     width="5%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.booleanValidator }}
                     dataSort
                     >
                     active
@@ -327,7 +347,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='cutOffTime'
                     width="5%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
                     >
                     cOT
@@ -336,7 +356,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='qualifiedStateCodes'
                     width="4%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea' }}
                     dataSort
                     >
                     qSC
@@ -345,7 +365,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='nonQualifiedStateCodes'
                     width="5%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea' }}
                     dataSort
                     >
                     nQSC
@@ -354,7 +374,7 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='showCutOffMessage'
                     width="6%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.booleanValidator }}
                     dataSort
                     >
                    sCOM
@@ -363,18 +383,16 @@ class shippingMethodsTable extends Component {
                   <TableHeaderColumn
                     dataField='shippingServiceCodes'
                     width="4%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberArrayValidator }}
                     dataSort
-                    onClick={()=> alert("hey")}
                     >
                    sSC
                   </TableHeaderColumn>
                   <TableHeaderColumn
                     dataField='tierGroup'
                     width="40%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea'}}
                     dataSort
-                    onClick={()=> alert("hey")}
                     >
                    tierGroup
                   </TableHeaderColumn>

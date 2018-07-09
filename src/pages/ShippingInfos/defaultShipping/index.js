@@ -21,23 +21,18 @@ class defaultShippingTable extends Component {
   cellEditProp = {
     mode: 'click',
     blurToSave: true,
-    beforeSaveCell: this.jobNameValidator.bind(this),
+    beforeSaveCell: this.numberValidator.bind(this),
     afterSaveCell: this.onAfterSaveCell.bind(this)
   };
   
-  jobNameValidator(value, row) {
+  numberValidator(value, row) {
     const response = { isValid: true, notification: { type: 'success', msg: 'Sucessfuly validate', title: 'WOOO' } };
-    if (!row.defaultShipMethodId) {
+    if (String(parseInt(value)) !== value && String(parseInt(value)).concat(".0") !== value) {
       response.isValid = false;
       response.notification.type = 'error';
-      response.notification.msg = 'Please Enter a value for this column';
-      response.notification.title = 'Error: Value is None';
-    } else if (value === "amazon") {
-      response.isValid = false;
-      response.notification.type = 'error';
-      response.notification.msg = 'BOOOOOOO';
-      response.notification.title = 'Error: Value is invalid';
-    }
+      response.notification.msg = 'This field only accepts numbers';
+      response.notification.title = 'Error: Invalid Type';
+    } 
     return response;
   }
 
@@ -181,7 +176,6 @@ class defaultShippingTable extends Component {
                   pagination={true}
                   options={options}
                   selectRow={ this.selectRowProp }
-                  validator={this.jobNameValidator}
                   hover={true}
                   
                   >
@@ -199,7 +193,7 @@ class defaultShippingTable extends Component {
                   <TableHeaderColumn
                     dataField='defaultShipMethodId'
                     width="20%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
                     filter={ { type: 'TextFilter'} }
                     >
@@ -208,7 +202,7 @@ class defaultShippingTable extends Component {
                   <TableHeaderColumn
                     dataField='shipMethodName'
                     width="20%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea'}}
                     dataSort
                     filter={ { type: 'TextFilter'} }
                     >
@@ -217,7 +211,7 @@ class defaultShippingTable extends Component {
                   <TableHeaderColumn
                     dataField='shippingMethodServiceCode'
                     width="20%"
-                    editable={ { type: 'textarea', validator: this.jobNameValidator }}
+                    editable={ { type: 'textarea', validator: this.numberValidator }}
                     dataSort
                     >
                     shippingmethodServiceCode
