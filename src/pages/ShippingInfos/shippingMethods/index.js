@@ -10,7 +10,8 @@ class shippingMethodsTable extends Component {
   id = ""
   path = ""
   toProd= false;
-  notUpdated = true;
+  firstUpdate = true;
+
 
   constructor(){
     super()
@@ -120,7 +121,7 @@ class shippingMethodsTable extends Component {
   ,"maxShippingLeadDays","active","cutOffTime","qualifiedStateCodes","nonQualifiedStateCodes",
   "showCuttOffMessage","shippingServiceCodes"]).replace(/\\/g, "");
     const retData= otherData.slice(0,-1).concat(",",tgKey,"{",tgVal,"}")
-    console.log(retData);
+    this.firstUpdate = false;
     return fetch(`http://localhost:8080/shippinginfos/shippingmethods/all`, {
     method: 'put',
     mode: 'cors',
@@ -142,7 +143,7 @@ class shippingMethodsTable extends Component {
     'Content-Type': 'application/json, text/plain, */*',
     'Accept': 'application/json',
     },
-    body: {}
+    body: ''
     }).then(res => {
       console.log(res);
     return res;
@@ -156,7 +157,7 @@ class shippingMethodsTable extends Component {
     'Content-Type': 'application/json, text/plain, */*',
     'Accept': 'application/json',
     },
-    body: {}
+    body: ''
     }).then(res => {
       console.log(res);
     return res;
@@ -204,6 +205,7 @@ class shippingMethodsTable extends Component {
   ,"maxShippingLeadDays","active","cutOffTime","qualifiedStateCodes","nonQualifiedStateCodes",
   "showCuttOffMessage","shippingServiceCodes"]).replace(/\\/g, "");
     const retData= otherData.slice(0,-1).concat(",",tgKey,tgVal,"}")
+    this.firstUpdate = false;
     return fetch(`http://localhost:8080/shippinginfos/shippingmethods/${this.id}`, {
     method: 'PATCH',
     mode: 'cors',
@@ -275,7 +277,10 @@ class shippingMethodsTable extends Component {
 }
 
   buttonUpdateOnClick() {
-    if (Object.keys(this.state.stagingList).length) {
+    if (this.firstUpdate) {
+      alert("Failed to push to staging, all datas are up to date");
+    }
+    else if (Object.keys(this.state.stagingList).length) {
       const hold = Object.assign({}, this.state.stagingList);
       delete hold[`${this.id}`];
       this.setState({stagingList: hold});

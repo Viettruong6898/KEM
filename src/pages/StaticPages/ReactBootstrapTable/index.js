@@ -11,6 +11,7 @@ class StaticPagesTable extends Component {
   id = ""
   path = "";
   toProd= false;
+  firstUpdate = true;
 
   constructor(){
     super()
@@ -76,6 +77,7 @@ class StaticPagesTable extends Component {
 
   CreatingData(data) {
     const nData= JSON.stringify(data);
+    this.firstUpdate = false;
     return fetch("http://localhost:8080/staticpages/all", {
     method: 'PUT',
     mode: 'cors',
@@ -146,6 +148,7 @@ updatingButtonOnSaveCell(id,value) {
 
 UpdatingData(data) {
   const nData= JSON.stringify(data);
+  this.firstUpdate = false;
   return fetch(`http://localhost:8080${this.path}`, {
   method: 'PATCH',
   mode: 'cors',
@@ -211,14 +214,18 @@ UpdatingData(data) {
 }
 
 buttonUpdateOnClick() {
-    if (Object.keys(this.state.stagingList).length) {
+    if (this.firstUpdate) {
+      alert("Failed to push to staging, all datas are up to date");
+    }
+    else if (Object.keys(this.state.stagingList).length) {
       const hold = Object.assign({}, this.state.stagingList);
       delete hold[`${this.id}`];
       this.setState({stagingList: hold});
       this.sendToStaging(); 
       alert("Sucessfully pushed to Staging");
-    } else if (!Object.keys(this.state.stagingList).length && this.state.toProd === true) {
+    } else if ((!Object.keys(this.state.stagingList).length && this.state.toProd === true)) {
       alert("Please make changes before pushing to staging");
+      
     }
       else {
         this.setState({toProd: true}); 
@@ -243,7 +250,6 @@ cardStyle = {
     var disableButton = false;
     if (!Object.keys(this.state.stagingList).length && this.state.toProd === false) {
       disableButton = true;
-      console.log(this.state.toProd);
     }
     if (this.state.toProd === true) {
       disableButton = false;

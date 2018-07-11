@@ -10,6 +10,7 @@ class defaultShippingTable extends Component {
   id = ""
   path = ""
   toProd= false;
+  firstUpdate = true;
 
   constructor(){
     super()
@@ -72,6 +73,7 @@ class defaultShippingTable extends Component {
 
   CreatingData(data) {
     const nData= JSON.stringify(data);
+    this.firstUpdate = false;
     return fetch("http://localhost:8080/shippinginfos/defaultshippings/all", {
     method: 'put',
     mode: 'cors',
@@ -92,7 +94,7 @@ class defaultShippingTable extends Component {
     'Content-Type': 'application/json, text/plain, */*',
     'Accept': 'application/json',
     },
-    body: {}
+    body: ''
     }).then(res => {
       console.log(res);
     return res;
@@ -106,7 +108,7 @@ class defaultShippingTable extends Component {
     'Content-Type': 'application/json, text/plain, */*',
     'Accept': 'application/json',
     },
-    body: {}
+    body: ''
     }).then(res => {
       console.log(res);
     return res;
@@ -134,6 +136,7 @@ class defaultShippingTable extends Component {
   }
 
   UpdatingData(data) {
+    this.firstUpdate = false;
     return fetch(`http://localhost:8080/shippinginfos/defaultshippings/${this.id}`, {
     method: 'PATCH',
     mode: 'cors',
@@ -199,7 +202,10 @@ class defaultShippingTable extends Component {
 }
 
   buttonUpdateOnClick() {
-    if (Object.keys(this.state.stagingList).length) {
+    if (this.firstUpdate) {
+      alert("Failed to push to staging, all datas are up to date");
+    }
+    else if (Object.keys(this.state.stagingList).length) {
       const hold = Object.assign({}, this.state.stagingList);
       delete hold[`${this.id}`];
       this.setState({stagingList: hold});
