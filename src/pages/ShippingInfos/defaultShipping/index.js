@@ -45,6 +45,7 @@ class defaultShippingTable extends Component {
    // this method is for sending data back to the backend
    onAfterInsertRow(row) {
     var needUpdate = false;
+    this.updatingButtonOnSaveCell(this.id,this.id);
     this.id = row.id;
     var updateValue = ({
         defaultShipMethodId: row.defaultShipMethodId,
@@ -202,7 +203,7 @@ class defaultShippingTable extends Component {
 }
 
   buttonUpdateOnClick() {
-    if (this.firstUpdate) {
+    if (this.firstUpdate || (!Object.keys(this.state.stagingList).length && this.state.toProd === true)) {
       alert("Failed to push to staging, all datas are up to date");
     }
     else if (Object.keys(this.state.stagingList).length) {
@@ -210,11 +211,8 @@ class defaultShippingTable extends Component {
       delete hold[`${this.id}`];
       this.setState({stagingList: hold});
       this.sendToStaging(); 
-      alert("Sucessfully pushed to Staging");
-    } else if (!Object.keys(this.state.stagingList).length && this.state.toProd === true) {
-      alert("Please make changes before pushing to staging");
-    }
-      else {
+      alert("Sucessfully pushed to Staging"); }
+    else {
         this.setState({toProd: true}); 
         this.sendToProd(); 
         alert("Sucessfully pushed to Production");

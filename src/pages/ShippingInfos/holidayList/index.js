@@ -69,6 +69,7 @@ class holidayListTable extends Component {
    onAfterInsertRow(row) {
     var needUpdate = false;
     this.id = row.id;
+    this.updatingButtonOnSaveCell(this.id,this.id);
     var boolean = true;
     this.id= row.id;
     if (row.active === "false") {
@@ -235,7 +236,7 @@ class holidayListTable extends Component {
 }
 
   buttonUpdateOnClick() {
-    if (this.firstUpdate) {
+    if (this.firstUpdate || (!Object.keys(this.state.stagingList).length && this.state.toProd === true)) {
       alert("Failed to push to staging, all datas are up to date");
     }
     else if (Object.keys(this.state.stagingList).length) {
@@ -243,14 +244,12 @@ class holidayListTable extends Component {
       delete hold[`${this.id}`];
       this.setState({stagingList: hold});
       this.sendToStaging(); 
-      alert("Sucessfully pushed to Staging");
-    } else if (!Object.keys(this.state.stagingList).length && this.state.toProd === true) {
-      alert("Please make changes before pushing to staging");
+      alert("Sucessfully pushed to Staging"); 
     }
-      else {
-        this.setState({toProd: true}); 
-        this.sendToProd(); 
-        alert("Sucessfully pushed to Production");
+    else {
+      this.setState({toProd: true}); 
+      this.sendToProd(); 
+      alert("Sucessfully pushed to Production");
     }
     return ;
   }

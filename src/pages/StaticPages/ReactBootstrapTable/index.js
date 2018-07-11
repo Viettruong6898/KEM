@@ -43,6 +43,7 @@ class StaticPagesTable extends Component {
    // this method is for sending data back to the backend
    onAfterInsertRow(row) {
     this.id=row.id;
+    this.updatingButtonOnSaveCell(this.id,this.id);
     var dict = {};
     var keyy = row.keys;
     var value = row.value;
@@ -214,7 +215,7 @@ UpdatingData(data) {
 }
 
 buttonUpdateOnClick() {
-    if (this.firstUpdate) {
+    if (this.firstUpdate || (!Object.keys(this.state.stagingList).length && this.state.toProd === true)) {
       alert("Failed to push to staging, all datas are up to date");
     }
     else if (Object.keys(this.state.stagingList).length) {
@@ -222,15 +223,11 @@ buttonUpdateOnClick() {
       delete hold[`${this.id}`];
       this.setState({stagingList: hold});
       this.sendToStaging(); 
-      alert("Sucessfully pushed to Staging");
-    } else if ((!Object.keys(this.state.stagingList).length && this.state.toProd === true)) {
-      alert("Please make changes before pushing to staging");
-      
-    }
-      else {
-        this.setState({toProd: true}); 
-        this.sendToProd(); 
-        alert("Sucessfully pushed to Production");
+      alert("Sucessfully pushed to Staging"); 
+    } else {
+      this.setState({toProd: true}); 
+      this.sendToProd(); 
+      alert("Sucessfully pushed to Production");
     }
     return ;
 }

@@ -68,6 +68,7 @@ class shippingMethodsTable extends Component {
     var needUpdate = false;
     this.notUpdated = false;
     this.id = row.id;
+    this.updatingButtonOnSaveCell(this.id,this.id);
     var updateValue = ({
       methodID: row.methodID,
       methodName: row.methodName,
@@ -277,7 +278,7 @@ class shippingMethodsTable extends Component {
 }
 
   buttonUpdateOnClick() {
-    if (this.firstUpdate) {
+    if (this.firstUpdate || (!Object.keys(this.state.stagingList).length && this.state.toProd === true)) {
       alert("Failed to push to staging, all datas are up to date");
     }
     else if (Object.keys(this.state.stagingList).length) {
@@ -286,13 +287,11 @@ class shippingMethodsTable extends Component {
       this.setState({stagingList: hold});
       this.sendToStaging(); 
       alert("Sucessfully pushed to Staging");
-    } else if (!Object.keys(this.state.stagingList).length && this.state.toProd === true) {
-      alert("Please make changes before pushing to staging");
     }
-      else {
-        this.setState({toProd: true}); 
-        this.sendToProd(); 
-        alert("Sucessfully pushed to Production");
+    else {
+      this.setState({toProd: true}); 
+      this.sendToProd(); 
+      alert("Sucessfully pushed to Production");
     }
     return ;
   }
