@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Link, withRouter } from 'react-router-dom';
-import Datetime from 'react-datetime';
 
 
 
@@ -10,7 +9,12 @@ class defaultShippingTable extends Component {
   pagename = "Default Shipping Methods"
   id = ""
   path = ""
+  toProd= false;
 
+  constructor(){
+    super()
+    this.buttonUpdateOnClick = this.buttonUpdateOnClick.bind(this);
+  }
   selectRowProp = {
     mode: 'checkbox',
     bgColor: 'pink', 
@@ -46,6 +50,7 @@ class defaultShippingTable extends Component {
         shipMethodName: row.shipMethodName,
         shippingMethodServiceCode: row.shippingMethodServiceCode
         })
+
     for (var item in this.state.data){
           if (this.id === this.state.data[item].id) {
             needUpdate = true;
@@ -78,11 +83,41 @@ class defaultShippingTable extends Component {
     }).then(res => {
     return res;
     }).catch(err => alert(err));
+  }
+  sendToStaging() {
+    return fetch("http://localhost:8080/shippinginfos/defaultshippings/stage", {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+    'Content-Type': 'application/json, text/plain, */*',
+    'Accept': 'application/json',
+    },
+    body: {}
+    }).then(res => {
+      console.log(res);
+    return res;
+    }).catch(err => alert(err));
+}
+  sendToProd() {
+    return fetch("http://localhost:8080/shippinginfos/defaultshippings/prod", {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+    'Content-Type': 'application/json, text/plain, */*',
+    'Accept': 'application/json',
+    },
+    body: {}
+    }).then(res => {
+      console.log(res);
+    return res;
+    }).catch(err => alert(err));
     }
+
 
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
     this.id = row.id;
+    this.updatingButtonOnSaveCell(this.id,row.pushedToStage);
     var newValue = ({
         defaultShipMethodId: row.defaultShipMethodId,
         shipMethodName: row.shipMethodName,
@@ -90,7 +125,13 @@ class defaultShippingTable extends Component {
       })
     alert(`Sucessfully saved the value!`);
     return this.UpdatingData(newValue);
-}
+  }
+  updatingButtonOnSaveCell(id,value) {
+    var updatingStaging = {}
+    updatingStaging[id] = value;
+    this.setState({stagingList: updatingStaging});
+    this.setState({toProd : false});
+  }
 
   UpdatingData(data) {
     return fetch(`http://localhost:8080/shippinginfos/defaultshippings/${this.id}`, {
@@ -111,24 +152,34 @@ class defaultShippingTable extends Component {
       const data = await api_call.json(); 
       const datas = [] 
       for (var each in data) {
-      if (data[each].id===undefined) {
-        alert('This url is not Valid: Please check for correction');
-        return <Link to="http://localhost:8080/">Home</Link>
-      } else {
-        this.id = data[each].id
-          datas.push({
-            id: data[each].id,
-            defaultShipMethodId: data[each].defaultShipMethodId,
-            shipMethodName: data[each].shipMethodName,
-            shippingMethodServiceCode: data[each].shippingMethodServiceCode
-        }
-      );
+        var keyy = data[each].id;
+        var value = data[each].pushedToStage;
+        var pair = {}
+        pair[keyy] = value;
+        this.setState({stagingList: pair})
+        console.log(this.state.stagingList);
+        if (data[each].id===undefined) {
+          alert('This url is not Valid: Please check for correction');
+          return <Link to="http://localhost:8080/">Home</Link>
+        } else {
+          this.id = data[each].id
+            datas.push({
+              id: data[each].id,
+              defaultShipMethodId: data[each].defaultShipMethodId,
+              shipMethodName: data[each].shipMethodName,
+              shippingMethodServiceCode: data[each].shippingMethodServiceCode,
+              pushedToStage: data[each].pushedToStage,
+              pushedToProd: data[each].pushedToProd
+          }
+        );
         } 
       }
       return datas; 
     }
 
   state = {
+    stagingList : {},
+    toProd : false
   };
   
   componentDidMount() {
@@ -147,7 +198,47 @@ class defaultShippingTable extends Component {
     this.setState(props);
 }
 
+  buttonUpdateOnClick() {
+    if (Object.keys(this.state.stagingList).length) {
+      const hold = Object.assign({}, this.state.stagingList);
+      delete hold[`${this.id}`];
+      this.setState({stagingList: hold});
+      this.sendToStaging(); 
+      alert("Sucessfully pushed to Staging");
+    } else if (!Object.keys(this.state.stagingList).length && this.state.toProd === true) {
+      alert("Please make changes before pushing to staging");
+    }
+      else {
+        this.setState({toProd: true}); 
+        this.sendToProd(); 
+        alert("Sucessfully pushed to Production");
+    }
+    return ;
+  }
+
+cardStyle = {
+  display: 'flex',
+  alignItems:'center',
+  height: '10vh',
+  width:"45vh",
+  float:'right',
+  overFlow: 'auto',
+  fontSize:'150%',
+  };
+
+
   render() {
+    var disableButton = false;
+    if (!Object.keys(this.state.stagingList).length && this.state.toProd === false) {
+      disableButton = true;
+      console.log(this.state.toProd);
+    }
+    if (this.state.toProd === true) {
+      disableButton = false;
+      this.state.toProd = true;
+    }
+    var disable = false;
+
     const options = {
       sizePerPage: 20,
       prePage: 'Previous',
@@ -160,12 +251,20 @@ class defaultShippingTable extends Component {
     };
     return (
       <div className="container-fluid">
-      
         <div className="row">
           <div className="col-md-12">
             <div className="card">
               <div className="header">
                 <h4>{this.pagename}</h4>
+                <div style={this.cardStyle} className="text-right">
+                      <button onClick={this.buttonUpdateOnClick} disabled={disableButton} > Push to Staging </button>
+                    </div>
+                    <div style={this.cardStyle} className="text-right">
+                      <button onClick= {this.buttonUpdateOnClick} disabled={!disableButton}> Push to Production </button>
+                    </div>
+                    <div style={this.cardStyle} className="text-right">
+                      <button> Reset all changes </button>
+                </div>
               </div>
               <div className="content">
                 <BootstrapTable
@@ -225,6 +324,7 @@ class defaultShippingTable extends Component {
           </div>
         </div>
       </div>
+      
 
     );
   }

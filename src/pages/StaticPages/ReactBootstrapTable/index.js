@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Link} from 'react-router-dom';
+import { isNull } from 'util';
 
 
 
@@ -9,6 +10,12 @@ class StaticPagesTable extends Component {
   page = ""
   id = ""
   path = "";
+  toProd= false;
+
+  constructor(){
+    super()
+    this.buttonUpdateOnClick = this.buttonUpdateOnClick.bind(this);
+  }
 
   selectRowProp = {
     mode: 'checkbox',
@@ -34,6 +41,7 @@ class StaticPagesTable extends Component {
   }
    // this method is for sending data back to the backend
    onAfterInsertRow(row) {
+    this.id=row.id;
     var dict = {};
     var keyy = row.keys;
     var value = row.value;
@@ -82,12 +90,43 @@ class StaticPagesTable extends Component {
     }).catch(err => alert(err));
     }
 
+  sendToStaging() {
+      return fetch("http://localhost:8080/staticpages/stage", {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+      'Content-Type': 'application/json, text/plain, */*',
+      'Accept': 'application/json',
+      },
+      body: ''
+      }).then(res => {
+        console.log(res);
+      return res;
+      }).catch(err => alert(err));
+  }
+  sendToProd() {
+    return fetch("http://localhost:8080/staticpages/prod", {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+    'Content-Type': 'application/json, text/plain, */*',
+    'Accept': 'application/json',
+    },
+    body: ''
+    }).then(res => {
+      console.log(res);
+    return res;
+    }).catch(err => alert(err));
+    }
+
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
+    this.id=row.id;
     var dict = {};
     var keyy = row.keys;
     var value = cellValue;
     dict[keyy] = `${value}`;
+    this.updatingButtonOnSaveCell(this.id,row.pushedToStage);
     var newValue = ({
       id: row.id,
       page: this.page,
@@ -96,6 +135,14 @@ class StaticPagesTable extends Component {
     alert(`Sucessfully saved the value: ${value}`);
     return this.UpdatingData(newValue);
 }
+
+updatingButtonOnSaveCell(id,value) {
+    var updatingStaging = {}
+    updatingStaging[id] = value;
+    this.setState({stagingList: updatingStaging});
+    this.setState({toProd : false});
+}
+
 
 UpdatingData(data) {
   const nData= JSON.stringify(data);
@@ -117,6 +164,12 @@ UpdatingData(data) {
     const api_call = await fetch(`http://localhost:8080${this.path}`);
     const data = await api_call.json(); 
     const datas = [] 
+    var keyy = data.id;
+    var value = data.pushedToStage;
+    var pair = {}
+    pair[keyy] = value;
+    this.setState({stagingList: pair})
+    console.log(this.state.stagingList);
     if (data.id===undefined) {
       alert('This url is not Valid: Please check for correction');
       return <Link to="http://localhost:8080/dashboard">Home</Link>
@@ -135,8 +188,10 @@ UpdatingData(data) {
   }
 
   state = {
+    stagingList : {},
+    toProd : false
   };
-  
+
   componentDidMount() {
     this.getDifferentPage().then(result => this.setState({
       data: result
@@ -146,14 +201,54 @@ UpdatingData(data) {
      if (prevProps !== this.props) {
     this.getDifferentPage().then(result => this.setState({
       data: result
-    }))}
+    }))
+  }
+  
 }
   
   componentWillReceiveProps(props) {
     this.setState(props);
 }
 
+buttonUpdateOnClick() {
+    if (Object.keys(this.state.stagingList).length) {
+      const hold = Object.assign({}, this.state.stagingList);
+      delete hold[`${this.id}`];
+      this.setState({stagingList: hold});
+      this.sendToStaging(); 
+      alert("Sucessfully pushed to Staging");
+    } else if (!Object.keys(this.state.stagingList).length && this.state.toProd === true) {
+      alert("Please make changes before pushing to staging");
+    }
+      else {
+        this.setState({toProd: true}); 
+        this.sendToProd(); 
+        alert("Sucessfully pushed to Production");
+    }
+    return ;
+}
+
+  
+cardStyle = {
+  display: 'flex',
+  alignItems:'center',
+  height: '10vh',
+  width:"45vh",
+  float:'right',
+  overFlow: 'auto',
+  fontSize:'150%',
+  };
+
   render() {
+    var disableButton = false;
+    if (!Object.keys(this.state.stagingList).length && this.state.toProd === false) {
+      disableButton = true;
+      console.log(this.state.toProd);
+    }
+    if (this.state.toProd === true) {
+      disableButton = false;
+      this.state.toProd = true;
+    }
     const options = {
       sizePerPage: 100,
       prePage: 'Previous',
@@ -172,6 +267,15 @@ UpdatingData(data) {
             <div className="card">
               <div className="header">
                 <h4>{this.page}</h4>
+                    <div style={this.cardStyle} className="text-right">
+                      <button onClick={this.buttonUpdateOnClick} disabled={disableButton} > Push to Staging </button>
+                    </div>
+                    <div style={this.cardStyle} className="text-right">
+                      <button onClick= {this.buttonUpdateOnClick} disabled={!disableButton}> Push to Production </button>
+                    </div>
+                    <div style={this.cardStyle} className="text-right">
+                      <button> Reset all changes </button>
+                    </div>
               </div>
               <div className="content">
                 <BootstrapTable

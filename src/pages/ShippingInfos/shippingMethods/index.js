@@ -9,7 +9,14 @@ class shippingMethodsTable extends Component {
   pagename = "Shipping Methods"
   id = ""
   path = ""
+  toProd= false;
+  notUpdated = true;
 
+  constructor(){
+    super()
+    this.buttonUpdateOnClick = this.buttonUpdateOnClick.bind(this);
+  }
+  
   selectRowProp = {
     mode: 'checkbox',
     bgColor: 'pink', 
@@ -58,6 +65,7 @@ class shippingMethodsTable extends Component {
    // this method is for sending data back to the backend
    onAfterInsertRow(row) {
     var needUpdate = false;
+    this.notUpdated = false;
     this.id = row.id;
     var updateValue = ({
       methodID: row.methodID,
@@ -124,11 +132,43 @@ class shippingMethodsTable extends Component {
     }).then(res => {
     return res;
     }).catch(err => alert(err));
+  }
+
+  sendToStaging() {
+    return fetch("http://localhost:8080/shippinginfos/shippingmethods/stage", {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+    'Content-Type': 'application/json, text/plain, */*',
+    'Accept': 'application/json',
+    },
+    body: {}
+    }).then(res => {
+      console.log(res);
+    return res;
+    }).catch(err => alert(err));
+}
+  sendToProd() {
+    return fetch("http://localhost:8080/shippinginfos/shippingmethods/prod", {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+    'Content-Type': 'application/json, text/plain, */*',
+    'Accept': 'application/json',
+    },
+    body: {}
+    }).then(res => {
+      console.log(res);
+    return res;
+    }).catch(err => alert(err));
     }
+
+    
 
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
     this.id=row.id;
+    this.updatingButtonOnSaveCell(this.id,row.pushedToStage);
     var newValue = ({
       methodID: row.methodID,
       methodName: row.methodName,
@@ -147,7 +187,14 @@ class shippingMethodsTable extends Component {
       })
     alert(`Sucessfully saved the value!`);
     return this.UpdatingData(newValue);
+  }
+  updatingButtonOnSaveCell(id,value) {
+    var updatingStaging = {}
+    updatingStaging[id] = value;
+    this.setState({stagingList: updatingStaging});
+    this.setState({toProd : false});
 }
+
 
   UpdatingData(data) {
     const tierGroupData= JSON.stringify(data,["tierGroup"]).replace(/\\/g, "");
@@ -175,6 +222,12 @@ class shippingMethodsTable extends Component {
       const data = await api_call.json(); 
       const datas = [] 
       for (var each in data) {
+        var keyy = data[each].id;
+        var value = data[each].pushedToStage;
+        var pair = {}
+        pair[keyy] = value;
+        this.setState({stagingList: pair})
+        console.log(this.state.stagingList);
       if (data[each].id===undefined) {
         alert('This url is not Valid: Please check for correction');
         return <Link to="http://localhost:8080/">Home</Link>
@@ -201,6 +254,8 @@ class shippingMethodsTable extends Component {
       return datas; }
 
   state = {
+    stagingList : {},
+    toProd : false
   };
   
   componentDidMount() {
@@ -219,7 +274,44 @@ class shippingMethodsTable extends Component {
     this.setState(props);
 }
 
+  buttonUpdateOnClick() {
+    if (Object.keys(this.state.stagingList).length) {
+      const hold = Object.assign({}, this.state.stagingList);
+      delete hold[`${this.id}`];
+      this.setState({stagingList: hold});
+      this.sendToStaging(); 
+      alert("Sucessfully pushed to Staging");
+    } else if (!Object.keys(this.state.stagingList).length && this.state.toProd === true) {
+      alert("Please make changes before pushing to staging");
+    }
+      else {
+        this.setState({toProd: true}); 
+        this.sendToProd(); 
+        alert("Sucessfully pushed to Production");
+    }
+    return ;
+  }
+  cardStyle = {
+    display: 'flex',
+    alignItems:'center',
+    height: '10vh',
+    width:"45vh",
+    float:'right',
+    overFlow: 'auto',
+    fontSize:'150%',
+    };
+
+
   render() {
+    var disableButton = false;
+    if (!Object.keys(this.state.stagingList).length && this.state.toProd === false) {
+      disableButton = true;
+      console.log(this.state.toProd);
+    }
+    if (this.state.toProd === true) {
+      disableButton = false;
+      this.state.toProd = true;
+    }
     const options = {
       sizePerPage: 20,
       prePage: 'Previous',
@@ -250,6 +342,15 @@ class shippingMethodsTable extends Component {
                 <h5>nQSC = nonQualifiedStateCodes</h5>
                 <h5>sCOM = showCutOffMessage</h5>
                 <h5>sSC = shippingServiceCodes</h5>
+                <div style={this.cardStyle} className="text-right">
+                      <button onClick={this.buttonUpdateOnClick} disabled={disableButton} > Push to Staging </button>
+                    </div>
+                    <div style={this.cardStyle} className="text-right">
+                      <button onClick= {this.buttonUpdateOnClick} disabled={!disableButton}> Push to Production </button>
+                    </div>
+                    <div style={this.cardStyle} className="text-right">
+                      <button> Reset all changes </button>
+                </div>
               </div>
               <div className="content">
                 <BootstrapTable

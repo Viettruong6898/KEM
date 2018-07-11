@@ -10,6 +10,10 @@ class shippingMasterTable extends Component {
   pagename = "Shipping Master"
   id = ""
   path = ""
+  constructor(){
+    super()
+    this.buttonUpdateOnClick = this.buttonUpdateOnClick.bind(this);
+  }
 
   selectRowProp = {
     mode: 'checkbox',
