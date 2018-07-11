@@ -155,6 +155,7 @@ class holidayListTable extends Component {
       boolean = false;
     }
     var newValue = ({
+      id: this.id,
       holidayId: Number(row.holidayId),
       holidayName: row.holidayName,
       holidayDate: row.holidayDate,

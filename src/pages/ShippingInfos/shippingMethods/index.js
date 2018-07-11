@@ -68,7 +68,7 @@ class shippingMethodsTable extends Component {
     var needUpdate = false;
     this.notUpdated = false;
     this.id = row.id;
-    this.updatingButtonOnSaveCell(this.id,this.id);
+    this.firstUpdate = false;
     var updateValue = ({
       methodID: row.methodID,
       methodName: row.methodName,
@@ -172,6 +172,7 @@ class shippingMethodsTable extends Component {
     this.id=row.id;
     this.updatingButtonOnSaveCell(this.id,row.pushedToStage);
     var newValue = ({
+      id: this.id,
       methodID: row.methodID,
       methodName: row.methodName,
       methodCode: row.methodCode,
@@ -202,7 +203,7 @@ class shippingMethodsTable extends Component {
     const tierGroupData= JSON.stringify(data,["tierGroup"]).replace(/\\/g, "");
     const tgKey = tierGroupData.slice(1,13);
     const tgVal = tierGroupData.slice(14,-2);
-    const otherData = JSON.stringify(data,["methodID","methodName","methodCode","incrementCharge","incrementLimit","minShippingLeadDays"
+    const otherData = JSON.stringify(data,["id","methodID","methodName","methodCode","incrementCharge","incrementLimit","minShippingLeadDays"
   ,"maxShippingLeadDays","active","cutOffTime","qualifiedStateCodes","nonQualifiedStateCodes",
   "showCuttOffMessage","shippingServiceCodes"]).replace(/\\/g, "");
     const retData= otherData.slice(0,-1).concat(",",tgKey,tgVal,"}")

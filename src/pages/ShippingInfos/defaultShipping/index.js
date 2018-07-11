@@ -122,11 +122,13 @@ class defaultShippingTable extends Component {
     this.id = row.id;
     this.updatingButtonOnSaveCell(this.id,row.pushedToStage);
     var newValue = ({
+        id: this.id,
         defaultShipMethodId: row.defaultShipMethodId,
         shipMethodName: row.shipMethodName,
         shippingMethodServiceCode: row.shippingMethodServiceCode
       })
     alert(`Sucessfully saved the value!`);
+    console.log(newValue);
     return this.UpdatingData(newValue);
   }
   updatingButtonOnSaveCell(id,value) {
@@ -142,7 +144,8 @@ class defaultShippingTable extends Component {
     method: 'PATCH',
     mode: 'cors',
     headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
     },
     body: JSON.stringify(data)
     }).then(res => {
