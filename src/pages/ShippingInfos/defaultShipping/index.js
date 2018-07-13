@@ -15,6 +15,7 @@ class defaultShippingTable extends Component {
   constructor(){
     super()
     this.buttonUpdateOnClick = this.buttonUpdateOnClick.bind(this);
+    this.resetUpdateOnClick = this.resetUpdateOnClick.bind(this);
   }
   selectRowProp = {
     mode: 'checkbox',
@@ -64,7 +65,7 @@ class defaultShippingTable extends Component {
               })
           }
         }
-
+        this.setState({counter:this.state.counter + 1})
     if (needUpdate) {
       return this.UpdatingData(updateValue);
     } else{
@@ -97,10 +98,10 @@ class defaultShippingTable extends Component {
     },
     body: ''
     }).then(res => {
-      console.log(res);
     return res;
     }).catch(err => alert(err));
-}
+  }
+
   sendToProd() {
     return fetch("http://localhost:8080/shippinginfos/defaultshippings/prod", {
     method: 'PUT',
@@ -111,7 +112,19 @@ class defaultShippingTable extends Component {
     },
     body: ''
     }).then(res => {
-      console.log(res);
+    return res;
+    }).catch(err => alert(err));
+  }
+  sendToReset() {
+    return fetch("http://localhost:8080/shippinginfos/defaultshippings/cancelnew", {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+    'Content-Type': 'application/json, text/plain, */*',
+    'Accept': 'application/json',
+    },
+    body: ''
+    }).then(res => {
     return res;
     }).catch(err => alert(err));
     }
@@ -128,7 +141,6 @@ class defaultShippingTable extends Component {
         shippingMethodServiceCode: row.shippingMethodServiceCode
       })
     alert(`Sucessfully saved the value!`);
-    console.log(newValue);
     return this.UpdatingData(newValue);
   }
   updatingButtonOnSaveCell(id,value) {
@@ -136,6 +148,7 @@ class defaultShippingTable extends Component {
     updatingStaging[id] = value;
     this.setState({stagingList: updatingStaging});
     this.setState({toProd : false});
+    this.setState({reset : true});
   }
 
   UpdatingData(data) {
@@ -164,7 +177,6 @@ class defaultShippingTable extends Component {
         var pair = {}
         pair[keyy] = value;
         this.setState({stagingList: pair})
-        console.log(this.state.stagingList);
         if (data[each].id===undefined) {
           alert('This url is not Valid: Please check for correction');
           return <Link to="http://localhost:8080/">Home</Link>
@@ -186,7 +198,9 @@ class defaultShippingTable extends Component {
 
   state = {
     stagingList : {},
-    toProd : false
+    toProd : false,
+    counter: 0,
+    reset: false
   };
   
   componentDidMount() {
@@ -195,10 +209,11 @@ class defaultShippingTable extends Component {
     }))}
 
    componentDidUpdate(prevProps,prevState) {
-     if (prevProps !== this.props) {
+     if (prevProps !== this.props || this.state.counter !== prevState.counter) {
     this.getDifferentPageName().then(result => this.setState({
       data: result
-    }))}
+    }))
+  }
 }
   
   componentWillReceiveProps(props) {
@@ -223,6 +238,15 @@ class defaultShippingTable extends Component {
     return ;
   }
 
+  resetUpdateOnClick(){
+    if (this.state.reset === true ){
+      alert("Sucessfully resetted the data");
+      this.sendToReset();
+      this.setState({reset:false})
+    } 
+    return ;
+  }
+
 cardStyle = {
   display: 'flex',
   alignItems:'center',
@@ -233,18 +257,20 @@ cardStyle = {
   fontSize:'150%',
   };
 
-
   render() {
     var disableButton = false;
+    var resetButton = true;
+    if ( this.state.reset === true ) {
+      resetButton = false;
+    };
     if (!Object.keys(this.state.stagingList).length && this.state.toProd === false) {
-      disableButton = true;
-      console.log(this.state.toProd);
+      disableButton = false;
     }
     if (this.state.toProd === true) {
       disableButton = false;
       this.state.toProd = true;
     }
-    var disable = false;
+
 
     const options = {
       sizePerPage: 20,
@@ -270,7 +296,7 @@ cardStyle = {
                       <button onClick= {this.buttonUpdateOnClick} disabled={!disableButton}> Push to Production </button>
                     </div>
                     <div style={this.cardStyle} className="text-right">
-                      <button> Reset all changes </button>
+                      <button disabled={resetButton} onClick= {this.resetUpdateOnClick}> Reset all changes </button>
                 </div>
               </div>
               <div className="content">

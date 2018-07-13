@@ -13,6 +13,7 @@ class shippingMasterTable extends Component {
   constructor(){
     super()
     this.buttonUpdateOnClick = this.buttonUpdateOnClick.bind(this);
+    this.resetUpdateOnClick = this.resetUpdateOnClick.bind(this);
   }
 
   selectRowProp = {

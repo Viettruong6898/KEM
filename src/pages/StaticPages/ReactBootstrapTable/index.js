@@ -16,6 +16,7 @@ class StaticPagesTable extends Component {
   constructor(){
     super()
     this.buttonUpdateOnClick = this.buttonUpdateOnClick.bind(this);
+    this.resetUpdateOnClick = this.resetUpdateOnClick.bind(this);
   }
 
   selectRowProp = {
@@ -69,6 +70,7 @@ class StaticPagesTable extends Component {
               })
           }
         }
+        this.setState({counter:this.state.counter + 1})
     if (needUpdate) {
       return this.UpdatingData(updateValue);
     } else{
@@ -88,8 +90,8 @@ class StaticPagesTable extends Component {
     },
     body: nData
     }).then(res => {
-      console.log(res);
     return res;
+    
     }).catch(err => alert(err));
     }
 
@@ -103,10 +105,10 @@ class StaticPagesTable extends Component {
       },
       body: ''
       }).then(res => {
-        console.log(res);
       return res;
       }).catch(err => alert(err));
   }
+
   sendToProd() {
     return fetch("http://localhost:8080/staticpages/prod", {
     method: 'PUT',
@@ -117,10 +119,24 @@ class StaticPagesTable extends Component {
     },
     body: ''
     }).then(res => {
-      console.log(res);
+    return res;
+    }).catch(err => alert(err));
+  }
+
+  sendToReset() {
+    return fetch("http://localhost:8080/staticpages/cancelnew", {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+    'Content-Type': 'application/json, text/plain, */*',
+    'Accept': 'application/json',
+    },
+    body: ''
+    }).then(res => {
     return res;
     }).catch(err => alert(err));
     }
+    
 
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
@@ -144,6 +160,7 @@ updatingButtonOnSaveCell(id,value) {
     updatingStaging[id] = value;
     this.setState({stagingList: updatingStaging});
     this.setState({toProd : false});
+    this.setState({reset : true});
 }
 
 
@@ -173,7 +190,6 @@ UpdatingData(data) {
     var pair = {}
     pair[keyy] = value;
     this.setState({stagingList: pair})
-    console.log(this.state.stagingList);
     if (data.id===undefined) {
       alert('This url is not Valid: Please check for correction');
       return <Link to="http://localhost:8080/dashboard">Home</Link>
@@ -193,22 +209,23 @@ UpdatingData(data) {
 
   state = {
     stagingList : {},
-    toProd : false
+    toProd : false,
+    counter: 0,
+    reset: false
   };
 
   componentDidMount() {
     this.getDifferentPage().then(result => this.setState({
       data: result
-    }))}
-
-   componentDidUpdate(prevProps,prevState) {
-     if (prevProps !== this.props) {
-    this.getDifferentPage().then(result => this.setState({
-      data: result
     }))
   }
-  
-}
+
+   componentDidUpdate(prevProps,prevState) {
+     if (prevProps !== this.props || this.state.counter !== prevState.counter ) {
+      this.getDifferentPage().then(result => this.setState({
+        data: result
+    }))}
+  }
   
   componentWillReceiveProps(props) {
     this.setState(props);
@@ -230,7 +247,17 @@ buttonUpdateOnClick() {
       alert("Sucessfully pushed to Production");
     }
     return ;
-}
+  }
+
+  resetUpdateOnClick(){
+    if (this.state.reset === true ){
+      alert("Sucessfully resetted the data");
+      this.sendToReset();
+      this.setState({reset:false})
+    } 
+    return ;
+  }
+
 
   
 cardStyle = {
@@ -245,6 +272,10 @@ cardStyle = {
 
   render() {
     var disableButton = false;
+    var resetButton = true;
+    if ( this.state.reset === true ) {
+      resetButton = false;
+    };
     if (!Object.keys(this.state.stagingList).length && this.state.toProd === false) {
       disableButton = true;
     }
@@ -277,7 +308,7 @@ cardStyle = {
                       <button onClick= {this.buttonUpdateOnClick} disabled={!disableButton}> Push to Production </button>
                     </div>
                     <div style={this.cardStyle} className="text-right">
-                      <button> Reset all changes </button>
+                      <button disabled={resetButton} onClick= {this.resetUpdateOnClick}> Reset all changes </button>
                     </div>
               </div>
               <div className="content">
