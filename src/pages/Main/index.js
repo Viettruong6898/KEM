@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import cx from 'classnames';
 import { setMobileNavVisibility } from '../../reducers/Layout';
 import { withRouter } from 'react-router-dom';
+import Header from './Header';
 
 import SideBar from '../../components/SideBar';
 import Dashboard from '../Dashboard';
@@ -29,6 +30,7 @@ const Main = ({
         <div className="close-layer" onClick={hideMobileMenu}></div>
         <SideBar />
         <div className="main-panel">
+          <Header />
           <Route exact path="/" component={Dashboard} />
           <Route path="/staticpages" component={StaticPagesTableRoute} />
           <Route path="/shippinginfos" component={shippingInfosRoute} />
