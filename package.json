@@ -4,6 +4,8 @@
   "private": true,
   "homepage": "https://jslancerteam.github.io/crystal-dashboard",
   "dependencies": {
+    "@okta/okta-react": "^1.0.2",
+    "@okta/okta-signin-widget": "^2.10.0",
     "animate.css": "^3.5.2",
     "autoprefixer": "7.1.2",
     "babel-core": "6.25.0",
