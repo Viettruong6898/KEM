@@ -14,22 +14,13 @@ const rootElement = document.getElementById('root');
 const renderApp = Component => {
   ReactDOM.render(
     <Provider store={store}>
-      <HashRouter>
         <Component />
-      </HashRouter>
     </Provider>,
     rootElement
   );
 };
 
 renderApp(Main);
-
-if (module.hot) {
-  module.hot.accept('./pages/Main', () => {
-    const NextApp = require('./pages/Main').default
-    renderApp(NextApp);
-  });
-}
 
 registerServiceWorker();
 

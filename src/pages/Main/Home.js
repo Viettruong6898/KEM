@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { withAuth } from '@okta/okta-react';
 
 export default withAuth(
@@ -28,7 +27,7 @@ export default withAuth(
     logout = async () => {
       this.props.auth.logout('/');
     };
-    
+
   render() {
     if (this.state.authenticated === null) return null;
     return this.state.authenticated ?

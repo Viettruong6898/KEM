@@ -25,12 +25,8 @@ export default withAuth(
     }
 
     onSuccess = res => {
-      console.log(res);
-      if(res === undefined) {
-        return ;
-      }
       return this.props.auth.redirect({
-        sessionToken: res.session.token
+        sessionToken: res.session.token 
       });
     };
 

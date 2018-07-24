@@ -37,7 +37,7 @@ export default withAuth(
         <div>
           <Navbar fluid={true}>
             <Nav pullRight onClick={this.logout}>
-              <NavItem> <Link  to={{pathname:`/login`}}> Log Out</Link> </NavItem>
+              <NavItem>  Log Out </NavItem>
             </Nav>
           </Navbar>
         </div>
@@ -45,7 +45,7 @@ export default withAuth(
         <div>
           <Navbar fluid={true}>
             <Nav pullRight onClick={this.login}>
-              <NavItem> <Link  to={{pathname:`/dashboard`}}> Log In</Link> </NavItem>
+              <NavItem> Log In </NavItem>
             </Nav>
           </Navbar>
         </div>
