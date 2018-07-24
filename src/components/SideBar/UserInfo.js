@@ -16,9 +16,9 @@ class UserInfo extends Component {
         <div className="user">
           <div className="userinfo">
             <div className="username">
-              Welcome Viet Truong{/* {user.name} */}
+              Welcome Guest
             </div>
-            <div className="title">Admin</div>
+            <div className="title">Guest</div>
           </div>
         </div>
       </div>

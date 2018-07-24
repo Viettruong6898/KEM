@@ -7,10 +7,7 @@ import StaticPagesTableRoute from '../StaticPages';
 import shippingInfosRoute from '../ShippingInfos';
 import { Security, SecureRoute, ImplicitCallback } from '@okta/okta-react';
 import Login from '../auth/Login';
-import Home from './Home';
 import Protected from './Protected';
-import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 function onAuthRequired({history}) {
   history.push('/login');
