@@ -1,22 +1,29 @@
 import React, { Component } from 'react';
 
 class log extends Component {
+  value = 'Users';
   state = {
     currentUserName: '',
-    currentUserEmail: ''
+    currentUserGroupStatus: ''
   };
 
   componentDidMount() {
     const idToken = JSON.parse(localStorage.getItem('okta-token-storage'));
+    console.log(this) 
+    console.log(idToken);
+    for (var number in idToken.idToken.claims.groups) {
+      if (idToken.idToken.claims.groups[number] === 'Admins') {
+        this.value = 'Admins'
+      }
+    }
     this.setState({
-      currentUserEmail: idToken.idToken.claims.email,
+      currentUserGroupStatus: this.value,
       currentUserName: idToken.idToken.claims.name
     });
   }
 
   render() {
-    const { currentUserEmail, currentUserName } = this.state;
-    console.log(this.state);
+    const { currentUserGroupStatus, currentUserName } = this.state;
     
 
     return (
@@ -26,7 +33,7 @@ class log extends Component {
             <div className="username">
             Welcome {currentUserName}
             </div>
-            <div className="title">Email: {currentUserEmail}</div>
+            <div className="title">{currentUserGroupStatus}</div>
           </div>
         </div>
       </div>

@@ -13,6 +13,8 @@ class holidayListTable extends Component {
   path = ""
   toProd= false;
   firstUpdate = true;
+  insert = false;
+  user = 'Users'
 
   constructor(){
     super()
@@ -237,6 +239,15 @@ class holidayListTable extends Component {
   };
   
   componentDidMount() {
+    const idToken = JSON.parse(localStorage.getItem('okta-token-storage'));
+    for (var number in idToken.idToken.claims.groups) {
+      if (idToken.idToken.claims.groups[number] === 'Admins') {
+        this.user = 'Admins'
+      }
+    }
+    if(this.user === 'Admins') {
+      this.insert = true;
+    }
     this.getDifferentPageName().then(result => this.setState({
       data: result,
     }))}
@@ -335,7 +346,7 @@ class holidayListTable extends Component {
               <div className="content">
                 <BootstrapTable
                   cellEdit={this.cellEditProp}
-                  insertRow={true}
+                  insertRow={this.insert}
                   data={this.state.data}
                   bordered={false}
                   striped

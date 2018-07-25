@@ -11,6 +11,8 @@ class shippingMethodsTable extends Component {
   path = ""
   toProd= false;
   firstUpdate = true;
+  insert = false;
+  user = 'Users'
 
 
   constructor(){
@@ -279,6 +281,15 @@ class shippingMethodsTable extends Component {
   };
   
   componentDidMount() {
+    const idToken = JSON.parse(localStorage.getItem('okta-token-storage'));
+    for (var number in idToken.idToken.claims.groups) {
+      if (idToken.idToken.claims.groups[number] === 'Admins') {
+        this.user = 'Admins'
+      }
+    }
+    if(this.user === 'Admins') {
+      this.insert = true;
+    }
     this.getDifferentPageName().then(result => this.setState({
       data: result,
     }))}
@@ -389,7 +400,7 @@ class shippingMethodsTable extends Component {
               <div className="content">
                 <BootstrapTable
                   cellEdit={this.cellEditProp}
-                  insertRow={true}
+                  insertRow={this.insert}
                   data={this.state.data}
                   bordered={false}
                   striped

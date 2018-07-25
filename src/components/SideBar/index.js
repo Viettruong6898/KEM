@@ -25,14 +25,11 @@ class SideBar extends Component {
       this.checkAuthentication();
     }
 
-
-
   render() {
     let {
       backgroundColor,
     } = this.props;
     if (this.state.authenticated === null) return null;
-    console.log(this.state.authenticated);
     const mainContent = this.state.authenticated ? (
       <div>
         <Log />

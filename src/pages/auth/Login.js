@@ -5,13 +5,7 @@ import { withAuth } from '@okta/okta-react';
 
 export default withAuth(
   class Login extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        authenticated: null
-      };
-      this.checkAuthentication();
-    }
+    state = { authenticated: null };
 
     async checkAuthentication() {
       const authenticated = await this.props.auth.isAuthenticated();
@@ -20,7 +14,11 @@ export default withAuth(
       }
     }
 
-    componentDidUpdate() {
+    async componentDidUpdate() {
+      this.checkAuthentication();
+    }
+
+    async componentDidMount() {
       this.checkAuthentication();
     }
 
