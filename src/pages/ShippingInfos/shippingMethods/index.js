@@ -337,7 +337,7 @@ class shippingMethodsTable extends Component {
     display: 'flex',
     alignItems:'center',
     height: '10vh',
-    width:"45vh",
+    width:"42vh",
     float:'right',
     overFlow: 'auto',
     fontSize:'150%',
