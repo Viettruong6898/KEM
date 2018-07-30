@@ -84,6 +84,22 @@ class Nav extends Component {
             </div>
           </Collapse>
         </li>
+        <li  className={this.isPathActive('/users') || this.state.usersMenuOpen ? 'active' : null}>
+          <a onClick={() => this.setState({ usersMenuOpen: !this.state.shippingandholidayMenuOpen })} data-toggle="collapse">
+            <i className="pe-7s-news-paper"></i>
+            <p> Users <b className="caret"></b></p>
+          </a>
+          <Collapse in={this.state.usersMenuOpen}>
+            <div>
+              <ul className="nav">
+              <li  
+             className={this.isPathActive(`/users`) ? 'active' : null}>
+            <Link to={{pathname:`/users`}}> All Users </Link>
+        </li>
+              </ul>
+            </div>
+          </Collapse>
+        </li>
       </ul>
     );
   }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 class log extends Component {
-  value = 'Users';
+  value = 'User';
   state = {
     currentUserName: '',
     currentUserGroupStatus: ''
@@ -9,11 +9,9 @@ class log extends Component {
 
   componentDidMount() {
     const idToken = JSON.parse(localStorage.getItem('okta-token-storage'));
-    console.log(this) 
-    console.log(idToken);
     for (var number in idToken.idToken.claims.groups) {
-      if (idToken.idToken.claims.groups[number] === 'Admins') {
-        this.value = 'Admins'
+      if (idToken.idToken.claims.groups[number] === 'Admin') {
+        this.value = 'Admin'
       }
     }
     this.setState({

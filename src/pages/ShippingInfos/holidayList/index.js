@@ -14,7 +14,7 @@ class holidayListTable extends Component {
   toProd= false;
   firstUpdate = true;
   insert = false;
-  user = 'Users'
+  user = 'User'
 
   constructor(){
     super()
@@ -241,11 +241,11 @@ class holidayListTable extends Component {
   componentDidMount() {
     const idToken = JSON.parse(localStorage.getItem('okta-token-storage'));
     for (var number in idToken.idToken.claims.groups) {
-      if (idToken.idToken.claims.groups[number] === 'Admins') {
-        this.user = 'Admins'
+      if (idToken.idToken.claims.groups[number] === 'Admin') {
+        this.user = 'Admin'
       }
     }
-    if(this.user === 'Admins') {
+    if(this.user === 'Admin') {
       this.insert = true;
     }
     this.getDifferentPageName().then(result => this.setState({

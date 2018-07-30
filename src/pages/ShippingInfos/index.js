@@ -11,6 +11,7 @@ const shippingInfosRoute = ({match}) => (
     <Route path={`${match.url}/defaultshippings`} component={defaultShippingTable} />
     <Route path={`${match.url}/holidaylists`} component={holidayListTable} />
     <Route path={`${match.url}/shippingmethods`} component={shippingMethodsTable} />
+    <Route path={`${match.url}/users`} component={shippingMethodsTable} />
   </div>
 );
 
