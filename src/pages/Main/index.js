@@ -1,8 +1,8 @@
 import React,{Component} from 'react';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import Header from './Header';
-import Regist from './regisForm';
-import GroupForm from './groupForm';
+import GroupController from '../Forms/groupController';
+import UserController from '../Forms/userController';
 import SideBar from '../../components/SideBar';
 import Dashboard from '../Dashboard';
 import StaticPagesTableRoute from '../StaticPages';
@@ -32,8 +32,8 @@ class Main extends Component {
         <Header />
         <Route path='/' exact={true} component={Dashboard}/>
         <SecureRoute path='/users' component={Users} />
-        <SecureRoute path='/createuser' component={Regist} />
-        <SecureRoute path='/creategroup' component={GroupForm} />
+        <SecureRoute path='/createuser' component={UserController} />
+        <SecureRoute path='/creategroup' component={GroupController} />
         <SecureRoute path="/staticpages" component={StaticPagesTableRoute} />
         <SecureRoute path="/shippinginfos" component={shippingInfosRoute} />
         <Route
