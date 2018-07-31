@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { Link, withRouter } from 'react-router-dom';
-import { GeoJSONSource } from 'mapbox-gl';
-import { ISO_8601 } from 'moment';
 
 
 
@@ -206,7 +204,7 @@ class holidayListTable extends Component {
 
     getDifferentPageName = async() => {
       this.path = this.props.location.pathname;
-      const api_call = await fetch(`http://localhost:8080/${this.path}/all`);
+      const api_call = await fetch(`http://localhost:8080${this.path}/all`);
       const data = await api_call.json(); 
       const datas = [] 
       for (var each in data) {

@@ -5,10 +5,10 @@ import renderField from './renderField';
 const validate = values => {
   const errors = {};
   if (!values.groupName) {
-    errors.email = 'Group Name is required';
+    errors.groupName = 'Group Name is required';
   } 
   if (!values.groupDes) {
-    errors.password = 'Group Description is required';
+    errors.groupDes = 'Group Description is required';
   } 
   return errors;
 };

@@ -239,7 +239,7 @@ class shippingMethodsTable extends Component {
 
     getDifferentPageName = async() => {
       this.path = this.props.location.pathname;
-      const api_call = await fetch(`http://localhost:8080/${this.path}/all`);
+      const api_call = await fetch(`http://localhost:8080${this.path}/all`);
       const data = await api_call.json(); 
       const datas = [] 
       for (var each in data) {
