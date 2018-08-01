@@ -8,6 +8,7 @@ class groupController extends React.Component {
   state = {
    authenticated: null 
   };
+
   async checkAuthentication() {
     const authenticated = await this.props.auth.isAuthenticated();
     if (authenticated !== this.state.authenticated) {
@@ -41,12 +42,13 @@ class groupController extends React.Component {
    profile["name"] = values.groupName
    profile["description"] = values.groupDes
    allData["profile"] = profile
+   alert(`Sucessfully created: ${values.groupName}`)
    return fetch("http://localhost:8080/users/groups/create", {
-        method: 'PUT',
+        method: 'POST',
         mode: 'cors',
         headers: {
-        'Content-Type': 'application/json, text/plain, */*',
-        'Accept': 'application/json',
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json'
         },
         body: JSON.stringify(allData)
         }).then(res => {

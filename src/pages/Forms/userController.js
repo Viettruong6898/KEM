@@ -52,12 +52,12 @@ class userController extends React.Component {
     passwords["password"] = hold;
     allData["profile"] = profile
     allData["credentials"] = passwords;
-    console.log(JSON.stringify(allData))
+    alert(`Sucessfully created User: ${firstName} ${lastName} ` )
     return fetch("http://localhost:8080/users/create", {
-        method: 'PUT',
+        method: 'POST',
         mode: 'cors',
         headers: {
-        'Content-Type': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json; charset=UTF-8',
         'Accept': 'application/json',
         },
         body: JSON.stringify(allData)

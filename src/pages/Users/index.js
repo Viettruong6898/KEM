@@ -66,9 +66,12 @@ class Users extends Component {
 
   // this method is for updating data in the tables
   onAfterSaveCell(row, cellName, cellValue) {
+    this.setState({counter :0})
     var currentGroups;
+    var currentGroupsLength = 1;
     if( row.group.indexOf(',') !== -1 ){
     currentGroups = row.group.split(',');
+    currentGroupsLength = currentGroupsLength + 1
     }
     var groupsToAdd = [];
     for (var item in currentGroups) {
@@ -79,11 +82,17 @@ class Users extends Component {
         groupsToAdd.push(currentGroups[item])
       }
     }
+  if(this.state.userToGroups[row.userName].length > currentGroupsLength) {
+    this.setState({counter :1})
+    alert("Removing a group is not supported, Failed to save")
+    return;
+  }
   for (var increment in groupsToAdd) {
     var groupId = this.state.groupToGroupId[groupsToAdd[increment]];
     this.UpdatingData(row.userId,groupId);
     return ;
   }
+  alert("Sucessfully added group(s) to database")
 }
 
 
@@ -106,17 +115,17 @@ class Users extends Component {
       const api_call = await fetch(`http://localhost:8080${this.path}/all/groups`);
       const data = await api_call.json(); 
       const datas = [] 
-      const users= {}
-      const groups = {}
+      const usersToId= {}
+      const groupsToId = {}
       const userToGroup = {};
       for (var each in data) {
-        var groupName = []
+        var allGroupsUserIsApartOf = []
         for (var type in data[each].group) {
-          var hold = 'User'
+          var currentStat = 'User'
           if(data[each].group[type].profile.name === 'Admin')  {
-            hold = 'Admin'
+            currentStat = 'Admin'
           }
-          groupName.push(data[each].group[type].profile.name);
+          allGroupsUserIsApartOf.push(data[each].group[type].profile.name);
         }
       if (data[each].id===undefined) {
         alert('This url is not Valid: Please check for correction');
@@ -124,26 +133,27 @@ class Users extends Component {
       } else {
         var userID = data[each].id;
         var userName = data[each].profile.firstName + ' ' + data[each].profile.lastName;
-        users[userName] = userID;
+        usersToId[userName] = userID;
         var groupID = data[each].group[type].id;
         var groupNames = data[each].group[type].profile.name;
-        groups[groupNames] = groupID;
-        userToGroup[userName] = groupName;
+        groupsToId[groupNames] = groupID;
+        userToGroup[userName] = allGroupsUserIsApartOf;
           datas.push({
             userId: userID,
             userName: userName ,
-            group: groupName,
-            currentStatus: hold
+            group: allGroupsUserIsApartOf,
+            currentStatus: currentStat
         });
         }}
-        this.setState({userToUserId: users, groupToGroupId:groups, userToGroups:userToGroup})
+        this.setState({userToUserId: usersToId, groupToGroupId: groupsToId, userToGroups:userToGroup})
       return datas; }
 
   state = {
     userToUserId : {},
     groupToGroupId :{},
     userToGroups:{},
-    state : { authenticated: null }
+    state : { authenticated: null },
+    counter : 0
   };
   
   componentDidMount() {
@@ -163,7 +173,7 @@ class Users extends Component {
 
    componentDidUpdate(prevProps,prevState) {
     this.checkAuthentication();
-     if (prevProps !== this.props) {
+     if (prevProps !== this.props || this.state.counter !== 0) {
     this.getDifferentPageName().then(result => this.setState({
       data: result
     }))}
